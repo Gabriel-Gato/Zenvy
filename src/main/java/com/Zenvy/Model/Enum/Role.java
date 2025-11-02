@@ -1,6 +1,6 @@
 package com.Zenvy.Model.Enum;
 
-public enum RoleName {
+public enum Role {
     ANFITRIAO,
     HOSPEDE
 }

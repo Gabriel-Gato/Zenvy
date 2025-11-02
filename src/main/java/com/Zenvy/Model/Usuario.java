@@ -1,7 +1,7 @@
 package com.Zenvy.Model;
+import com.Zenvy.Model.Enum.Role;
 import jakarta.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "usuarios")
@@ -22,29 +22,25 @@ public class Usuario {
     @Column(nullable = false)
     private String telefone;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String fotoPerfil;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "usuario_roles",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 
     public Usuario() {
     }
 
-    public Usuario(Long id, String nome, String email, String senha, String telefone, String fotoPerfil, Set<Role> roles) {
+    public Usuario(Long id, String nome, String email, String senha, String telefone, String fotoPerfil, Role role) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.telefone = telefone;
         this.fotoPerfil = fotoPerfil;
-        this.roles = roles;
+        this.role = role;
     }
 
     public Long getId() {
@@ -95,12 +91,12 @@ public class Usuario {
         this.fotoPerfil = fotoPerfil;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
 
