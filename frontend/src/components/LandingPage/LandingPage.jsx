@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './LandingPage.css';
 
 const LandingPage = () => {
@@ -89,8 +90,8 @@ const LandingPage = () => {
             <a href="#contato" className="nav-link">Contato</a>
           </div>
           <div className="nav-buttons">
-            <button className="btn-login">Login</button>
-            <button className="btn-cadastrar">Cadastra-se</button>
+            <Link to="/login" className="btn-login">Login</Link>
+            <Link to="/cadastro" className="btn-cadastrar">Cadastra-se</Link>
           </div>
         </nav>
       </header>
