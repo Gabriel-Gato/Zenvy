@@ -1,0 +1,503 @@
+/* Reset e Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.casas-page {
+  font-family: 'Roboto', 'Inter', sans-serif;
+  background: white;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: white;
+  box-shadow: 0px 9px 4px rgba(0, 0, 0, 0.25);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.nav {
+  max-width: 1468px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00AAFF;
+}
+
+.logo-image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #7E7575;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #00AAFF;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-greeting {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 1.1rem;
+}
+
+.greeting-text {
+  color: #7E7575;
+}
+
+.user-name {
+  color: #00AAFF;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #7E7575;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #f0f0f0;
+  color: #00AAFF;
+}
+
+/* Hero Search Section */
+.search-hero {
+  position: relative;
+  height: 400px;
+  margin-top: 144px;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('/public/Rectangle 24.png') center/cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0.32;
+}
+
+.search-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem;
+}
+
+.search-card {
+  background: white;
+  border-radius: 50px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.search-form {
+  width: 100%;
+}
+
+.search-fields {
+  display: grid;
+  grid-template-columns: 2fr 0.1fr 1.5fr 0.1fr 1.5fr 0.1fr 1.5fr 0.1fr auto auto;
+  align-items: end;
+  gap: 1rem;
+}
+
+.search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-label {
+  color: black;
+  font-size: 1.2rem;
+  font-family: 'Josefin Slab', serif;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 0;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 100;
+  color: black;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.input-line {
+  width: 100%;
+  height: 1px;
+  background: black;
+  margin-top: 0.25rem;
+}
+
+.field-separator {
+  width: 1px;
+  height: 30px;
+  background: #C8C8C8;
+  align-self: center;
+}
+
+.filter-btn,
+.search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-btn {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.filter-btn:hover {
+  background: #f0f0f0;
+}
+
+.search-btn {
+  background: #00AAFF;
+  width: 59px;
+  height: 59px;
+}
+
+.search-btn:hover {
+  background: #0099e6;
+  transform: scale(1.05);
+}
+
+/* Casas Grid */
+.casas-grid {
+  padding: 3rem 2rem;
+  background: white;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.casas-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.casa-card {
+  background: white;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.casa-card:hover {
+  transform: translateY(-5px);
+}
+
+.casa-image {
+  width: 100%;
+  height: 288px;
+  object-fit: cover;
+}
+
+.casa-info {
+  padding: 1.5rem;
+}
+
+.casa-title {
+  color: #4E4949;
+  font-size: 1.5rem;
+  font-family: 'Shippori Mincho', serif;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.casa-price {
+  color: #4E4949;
+  font-size: 1rem;
+  font-family: 'Sofia Sans Extra Condensed', sans-serif;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.casa-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4E4949;
+}
+
+.casa-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rating-value {
+  font-size: 0.75rem;
+  font-family: 'Spartan', sans-serif;
+  font-weight: 700;
+}
+
+.separator-dot {
+  width: 3px;
+  height: 3px;
+  background: #D9D9D9;
+  border-radius: 50%;
+}
+
+.casa-location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-family: 'Sofia Sans Extra Condensed', sans-serif;
+  font-weight: 400;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .search-fields {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .field-separator {
+    display: none;
+  }
+
+  .filter-btn,
+  .search-btn {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+  }
+
+  .user-section {
+    gap: 0.5rem;
+  }
+
+  .search-hero {
+    height: auto;
+    padding: 2rem 0;
+  }
+
+  .search-card {
+    border-radius: 25px;
+    padding: 1.5rem;
+  }
+
+  .casas-grid {
+    padding: 2rem 1rem;
+  }
+
+  .casas-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-logo span {
+    font-size: 1.25rem;
+  }
+
+  .logo-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .user-greeting {
+    font-size: 1rem;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .search-card {
+    padding: 1rem;
+  }
+
+  .field-label {
+    font-size: 1rem;
+  }
+
+  .search-input {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.casa-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.casa-card:nth-child(1) { animation-delay: 0.1s; }
+.casa-card:nth-child(2) { animation-delay: 0.2s; }
+.casa-card:nth-child(3) { animation-delay: 0.3s; }
+.casa-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Indicador de Filtros Ativos */
+.filtros-ativos {
+  background: #f8f9fa;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.filtros-tags {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filtros-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.filtro-tag {
+  background: #00AAFF;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.limpar-filtros {
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.limpar-filtros:hover {
+  background: #dc3545;
+  color: white;
+}
+
+/* Header da Lista de Casas */
+.casas-header {
+  margin-bottom: 2rem;
+}
+
+.casas-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+/* Responsividade para Filtros Ativos */
+@media (max-width: 768px) {
+  .filtros-tags {
+    gap: 0.5rem;
+  }
+
+  .filtro-tag,
+  .limpar-filtros {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+}

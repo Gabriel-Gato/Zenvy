@@ -84,11 +84,11 @@ const LandingPage = () => {
               className="logo-image"
             />
           </div>
-          <div className="nav-links">
-            <a href="#home" className="nav-link">Home</a>
-            <a href="#casas" className="nav-link">Casas</a>
-            <a href="#contato" className="nav-link">Contato</a>
-          </div>
+        <div className="nav-links">
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/casas" className="nav-link">Casas</Link>
+          <Link to="/contato" className="nav-link">Contato</Link>
+        </div>
           <div className="nav-buttons">
             <Link to="/login" className="btn-login">Login</Link>
             <Link to="/cadastro" className="btn-cadastrar">Cadastra-se</Link>
