@@ -246,4 +246,7 @@ const Cadastro = () => {
   );
 };
 
+//Adicionar logica dps
+
+
 export default Cadastro;
