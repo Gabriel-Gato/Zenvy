@@ -2,10 +2,8 @@ package com.Zenvy.controllers;
 
 import com.Zenvy.Model.Avaliacao;
 import com.Zenvy.Service.AvaliacaoService;
-<<<<<<< HEAD
+
 import jakarta.validation.Valid;
-=======
->>>>>>> b6c09fe62c5597b8925d9969adf243b484bbcc12
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +22,7 @@ public class AvaliacaoController {
     public ResponseEntity<Avaliacao> criarAvaliacao(
             @PathVariable Long imovelId,
             @PathVariable Long autorId,
-<<<<<<< HEAD
             @RequestBody @Valid Avaliacao avaliacao) {
-=======
-            @RequestBody Avaliacao avaliacao) {
->>>>>>> b6c09fe62c5597b8925d9969adf243b484bbcc12
 
         var novaAvaliacao = avaliacaoService.criarAvaliacao(imovelId, autorId, avaliacao);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaAvaliacao);
@@ -47,7 +41,7 @@ public class AvaliacaoController {
     @PutMapping("/{id}")
     public ResponseEntity<Avaliacao> atualizar(
             @PathVariable Long id,
-            @RequestBody Avaliacao avaliacaoAtualizada) {
+            @RequestBody @Valid Avaliacao avaliacaoAtualizada) {
 
         var avaliacao = avaliacaoService.atualizar(id, avaliacaoAtualizada);
         return ResponseEntity.ok(avaliacao);
