@@ -1,5 +1,6 @@
 package com.Zenvy.Service;
 
+import com.Zenvy.Configuration.EmailService;
 import com.Zenvy.Model.Enum.StatusReserva;
 import com.Zenvy.Model.Imovel;
 import com.Zenvy.Model.Reserva;
@@ -7,6 +8,8 @@ import com.Zenvy.Model.Usuario;
 import com.Zenvy.Repository.ImovelRepository;
 import com.Zenvy.Repository.ReservaRepository;
 import com.Zenvy.Repository.UsuarioRepository;
+import com.Zenvy.exceptions.EmailException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +18,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReservaService {
 
-    @Autowired
     private ReservaRepository reservaRepository;
-
-    @Autowired
     private ImovelRepository imovelRepository;
-
-    @Autowired
     private UsuarioRepository usuarioRepository;
-
-
+    private final EmailService emailService;
 
 
     public Reserva criarReserva(Long imovelId, Long hospedeId, Reserva reserva) {
@@ -55,7 +53,6 @@ public class ReservaService {
             }
         }
 
-
         if (imovel.getPrecoPorNoite() != null) {
             long dias = ChronoUnit.DAYS.between(reserva.getDataCheckin(), reserva.getDataCheckout());
             reserva.setValorTotal(imovel.getPrecoPorNoite() * dias);
@@ -65,7 +62,23 @@ public class ReservaService {
         reserva.setHospede(hospede);
         reserva.setStatus(StatusReserva.CONFIRMADA);
 
-        return reservaRepository.save(reserva);
+        Reserva reservaSalva = reservaRepository.save(reserva);
+
+        try {
+            emailService.enviarConfirmacaoDeReserva(
+                    reservaSalva.getHospede().getEmail(),
+                    "Confirmação de Reserva - " + imovel,
+                    "Olá " + hospede.getNome() + ",\n\n" +
+                            "Sua reserva no imóvel foi confirmada!\n" +
+                            "Check-in: " + reservaSalva.getDataCheckin() + "\n" +
+                            "Check-out: " + reservaSalva.getDataCheckout() + "\n" +
+                            "Valor total: R$ " + reservaSalva.getValorTotal() + "\n\n" +
+                            "Obrigado por reservar com o Arbnb!"
+            );
+        } catch (EmailException e) {
+            System.err.println("Falha ao enviar e-mail de confirmação: " + e.getMessage());
+        }
+        return reservaSalva;
     }
 
 
@@ -103,14 +116,26 @@ public class ReservaService {
     }
 
 
-    public Reserva cancelar(Long id) {
-        Reserva reserva = reservaRepository.findById(id)
+    public void cancelarReserva(Long reservaId) {
+        Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new IllegalArgumentException("Reserva não encontrada"));
 
         reserva.setStatus(StatusReserva.CANCELADA);
-        return reservaRepository.save(reserva);
-    }
+        reservaRepository.save(reserva);
 
+        try {
+            emailService.enviarCancelamentoDeReserva(
+                    reserva.getHospede().getEmail(),
+                    "Cancelamento de Reserva - " + reserva.getImovel(),
+                    "Olá " + reserva.getHospede().getNome() + ",\n\n" +
+                            "Sua reserva no imóvel '" + reserva.getImovel() + "' foi cancelada.\n" +
+                            "Esperamos vê-lo novamente em breve!\n\n" +
+                            "Equipe Arbnb."
+            );
+        } catch (EmailException e) {
+            System.err.println("Falha ao enviar e-mail de cancelamento: " + e.getMessage());
+        }
+    }
 
     public void deletar(Long id) {
         Reserva reserva = reservaRepository.findById(id)
