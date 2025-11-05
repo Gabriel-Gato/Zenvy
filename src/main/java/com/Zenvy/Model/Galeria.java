@@ -1,6 +1,14 @@
 package com.Zenvy.Model;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Galeria {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -8,28 +16,4 @@ public class Galeria {
 
     @Column(nullable = false)
     private String imagem;
-
-    public Galeria() {
-    }
-
-    public Galeria(Long id, String imagem) {
-        this.id = id;
-        this.imagem = imagem;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getImagem() {
-        return imagem;
-    }
-
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
-    }
 }
