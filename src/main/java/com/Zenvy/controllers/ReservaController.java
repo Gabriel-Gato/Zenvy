@@ -1,7 +1,7 @@
 package com.Zenvy.controllers;
 
-import com.Zenvy.Model.Reserva;
-import com.Zenvy.Service.ReservaService;
+import com.Zenvy.models.Reserva;
+import com.Zenvy.services.ReservaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class ReservaController {
             @PathVariable Long hospedeId,
             @RequestBody Reserva reserva) {
 
-        Reserva novaReserva = reservaService.criarReserva(imovelId, hospedeId, reserva);
+        var novaReserva = reservaService.criarReserva(imovelId, hospedeId, reserva);
         return ResponseEntity.ok(novaReserva);
     }
 
@@ -45,7 +45,7 @@ public class ReservaController {
             @PathVariable Long id,
             @RequestBody Reserva reservaAtualizada) {
 
-        Reserva reserva = reservaService.atualizar(id, reservaAtualizada);
+        var reserva = reservaService.atualizar(id, reservaAtualizada);
         return ResponseEntity.ok(reserva);
     }
 

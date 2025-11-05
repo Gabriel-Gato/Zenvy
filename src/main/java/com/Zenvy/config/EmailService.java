@@ -1,4 +1,4 @@
-package com.Zenvy.Configuration;
+package com.Zenvy.config;
 
 import com.Zenvy.exceptions.EmailException;
 import lombok.RequiredArgsConstructor;

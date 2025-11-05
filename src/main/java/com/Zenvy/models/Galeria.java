@@ -1,4 +1,4 @@
-package com.Zenvy.Model;
+package com.Zenvy.models;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

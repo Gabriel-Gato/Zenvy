@@ -1,6 +1,6 @@
-package com.Zenvy.Repository;
+package com.Zenvy.repositories;
 
-import com.Zenvy.Model.Usuario;
+import com.Zenvy.models.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

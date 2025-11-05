@@ -1,4 +1,4 @@
-package com.Zenvy.Model.Enum;
+package com.Zenvy.models.enums;
 
 
 //Adicionar as imagens dps, para ter um icone para as comodidades

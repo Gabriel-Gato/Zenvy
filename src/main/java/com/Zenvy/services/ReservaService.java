@@ -1,19 +1,17 @@
-package com.Zenvy.Service;
+package com.Zenvy.services;
 
-import com.Zenvy.Configuration.EmailService;
-import com.Zenvy.Model.Enum.StatusReserva;
-import com.Zenvy.Model.Imovel;
-import com.Zenvy.Model.Reserva;
-import com.Zenvy.Model.Usuario;
-import com.Zenvy.Repository.ImovelRepository;
-import com.Zenvy.Repository.ReservaRepository;
-import com.Zenvy.Repository.UsuarioRepository;
+import com.Zenvy.config.EmailService;
+import com.Zenvy.models.enums.StatusReserva;
+import com.Zenvy.models.Imovel;
+import com.Zenvy.models.Reserva;
+import com.Zenvy.models.Usuario;
+import com.Zenvy.repositories.ImovelRepository;
+import com.Zenvy.repositories.ReservaRepository;
+import com.Zenvy.repositories.UsuarioRepository;
 import com.Zenvy.exceptions.EmailException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 

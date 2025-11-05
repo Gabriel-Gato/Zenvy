@@ -1,11 +1,11 @@
-package com.Zenvy.Service;
+package com.Zenvy.services;
 
-import com.Zenvy.Model.Avaliacao;
-import com.Zenvy.Model.Imovel;
-import com.Zenvy.Model.Usuario;
-import com.Zenvy.Repository.AvaliacaoRepository;
-import com.Zenvy.Repository.ImovelRepository;
-import com.Zenvy.Repository.UsuarioRepository;
+import com.Zenvy.models.Avaliacao;
+import com.Zenvy.models.Imovel;
+import com.Zenvy.models.Usuario;
+import com.Zenvy.repositories.AvaliacaoRepository;
+import com.Zenvy.repositories.ImovelRepository;
+import com.Zenvy.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

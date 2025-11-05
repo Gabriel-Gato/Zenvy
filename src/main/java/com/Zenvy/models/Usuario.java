@@ -1,5 +1,5 @@
-package com.Zenvy.Model;
-import com.Zenvy.Model.Enum.Role;
+package com.Zenvy.models;
+import com.Zenvy.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

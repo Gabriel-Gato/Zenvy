@@ -1,6 +1,6 @@
-package com.Zenvy.Model;
+package com.Zenvy.models;
 
-import com.Zenvy.Model.Enum.StatusReserva;
+import com.Zenvy.models.enums.StatusReserva;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

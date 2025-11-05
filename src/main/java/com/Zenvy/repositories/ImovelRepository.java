@@ -1,7 +1,7 @@
-package com.Zenvy.Repository;
+package com.Zenvy.repositories;
 
 
-import com.Zenvy.Model.Imovel;
+import com.Zenvy.models.Imovel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

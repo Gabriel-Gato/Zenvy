@@ -1,7 +1,7 @@
-package com.Zenvy.Service;
+package com.Zenvy.services;
 
-import com.Zenvy.Model.Galeria;
-import com.Zenvy.Repository.GaleriaRepository;
+import com.Zenvy.models.Galeria;
+import com.Zenvy.repositories.GaleriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

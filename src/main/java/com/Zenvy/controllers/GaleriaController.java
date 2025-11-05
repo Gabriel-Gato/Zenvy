@@ -1,7 +1,7 @@
 package com.Zenvy.controllers;
 
-import com.Zenvy.Model.Galeria;
-import com.Zenvy.Service.GaleriaService;
+import com.Zenvy.models.Galeria;
+import com.Zenvy.services.GaleriaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

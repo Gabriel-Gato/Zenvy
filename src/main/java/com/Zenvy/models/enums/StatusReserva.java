@@ -1,4 +1,4 @@
-package com.Zenvy.Model.Enum;
+package com.Zenvy.models.enums;
 
 public enum StatusReserva {
     CONFIRMADA,

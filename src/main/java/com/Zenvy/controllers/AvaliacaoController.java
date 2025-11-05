@@ -1,7 +1,7 @@
 package com.Zenvy.controllers;
 
-import com.Zenvy.Model.Avaliacao;
-import com.Zenvy.Service.AvaliacaoService;
+import com.Zenvy.models.Avaliacao;
+import com.Zenvy.services.AvaliacaoService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
