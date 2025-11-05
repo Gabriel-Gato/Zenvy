@@ -2,6 +2,7 @@ package com.Zenvy.controllers;
 
 import com.Zenvy.Model.Avaliacao;
 import com.Zenvy.Service.AvaliacaoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class AvaliacaoController {
     public ResponseEntity<Avaliacao> criarAvaliacao(
             @PathVariable Long imovelId,
             @PathVariable Long autorId,
-            @RequestBody Avaliacao avaliacao) {
+            @RequestBody @Valid Avaliacao avaliacao) {
 
         var novaAvaliacao = avaliacaoService.criarAvaliacao(imovelId, autorId, avaliacao);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaAvaliacao);
