@@ -6,30 +6,26 @@ import com.Zenvy.models.Usuario;
 import com.Zenvy.repositories.AvaliacaoRepository;
 import com.Zenvy.repositories.ImovelRepository;
 import com.Zenvy.repositories.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AvaliacaoService {
 
-    @Autowired
-    private AvaliacaoRepository avaliacaoRepository;
-
-    @Autowired
-    private ImovelRepository imovelRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final ImovelRepository imovelRepository;
+    private final UsuarioRepository usuarioRepository;
 
 
     public Avaliacao criarAvaliacao(Long imovelId, Long autorId, Avaliacao avaliacao) {
-        Imovel imovel = imovelRepository.findById(imovelId)
+        var imovel = imovelRepository.findById(imovelId)
                 .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
 
-        Usuario autor = usuarioRepository.findById(autorId)
+        var autor = usuarioRepository.findById(autorId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         if (avaliacao.getNota() == null || avaliacao.getNota() < 1 || avaliacao.getNota() > 5) {
@@ -54,7 +50,7 @@ public class AvaliacaoService {
     }
 
     public Avaliacao atualizar(Long id, Avaliacao avaliacaoAtualizada) {
-        Avaliacao avaliacao = avaliacaoRepository.findById(id)
+        var avaliacao = avaliacaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada"));
 
         if (avaliacaoAtualizada.getNota() != null &&
@@ -71,13 +67,13 @@ public class AvaliacaoService {
     }
 
     public void deletar(Long id) {
-        Avaliacao avaliacao = avaliacaoRepository.findById(id)
+        var avaliacao = avaliacaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada"));
         avaliacaoRepository.delete(avaliacao);
     }
 
     public double calcularMediaPorImovel(Long imovelId) {
-        List<Avaliacao> avaliacoes = avaliacaoRepository.findByImovelId(imovelId);
+        var avaliacoes = avaliacaoRepository.findByImovelId(imovelId);
         if (avaliacoes.isEmpty()) return 0.0;
         double soma = avaliacoes.stream()
                 .mapToDouble(Avaliacao::getNota)
@@ -85,5 +81,4 @@ public class AvaliacaoService {
 
         return soma / avaliacoes.size();
     }
-
 }
