@@ -43,7 +43,6 @@ public class ImovelService {
         return imovelRepository.save(imovel);
     }
 
-
     public Imovel cadastrar(Imovel imovel) {
         if (imovel.getAnfitriao() == null || imovel.getAnfitriao().getId() == null) {
             throw new BusinessException("O imóvel deve ter um anfitrião válido.");
@@ -55,7 +54,6 @@ public class ImovelService {
         imovel.setAnfitriao(anfitriao);
         return imovelRepository.save(imovel);
     }
-
 
     public Imovel atualizar(Long id, Imovel imovelAtualizado) {
         var imovel = imovelRepository.findById(id)
@@ -100,16 +98,15 @@ public class ImovelService {
                 .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
     }
 
-
     public List<Imovel> listarTodos() {
         return imovelRepository.findAll();
     }
 
-
-    public void deletar(Long id) {
-        var imovel = imovelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
-        imovelRepository.delete(imovel);
+    public void deletarPorId(Long id) {
+        if (!imovelRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Imóvel não encontrado.");
+        }
+        imovelRepository.deleteById(id);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.Zenvy.services;
 
+import com.Zenvy.exceptions.ResourceNotFoundException;
 import com.Zenvy.models.Avaliacao;
 import com.Zenvy.models.Imovel;
 import com.Zenvy.models.Usuario;
@@ -20,7 +21,6 @@ public class AvaliacaoService {
     private final ImovelRepository imovelRepository;
     private final UsuarioRepository usuarioRepository;
 
-
     public Avaliacao criarAvaliacao(Long imovelId, Long autorId, Avaliacao avaliacao) {
         var imovel = imovelRepository.findById(imovelId)
                 .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
@@ -39,11 +39,9 @@ public class AvaliacaoService {
         return avaliacaoRepository.save(avaliacao);
     }
 
-
     public List<Avaliacao> listarTodas() {
         return avaliacaoRepository.findAll();
     }
-
 
     public List<Avaliacao> listarPorImovel(Long imovelId) {
         return avaliacaoRepository.findByImovelId(imovelId);
@@ -66,10 +64,11 @@ public class AvaliacaoService {
         return avaliacaoRepository.save(avaliacao);
     }
 
-    public void deletar(Long id) {
-        var avaliacao = avaliacaoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada"));
-        avaliacaoRepository.delete(avaliacao);
+    public void deletarPorId(Long id) {
+        if (!avaliacaoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Avaliação não encontrada");
+        }
+        avaliacaoRepository.deleteById(id);
     }
 
     public double calcularMediaPorImovel(Long imovelId) {

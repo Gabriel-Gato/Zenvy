@@ -135,10 +135,11 @@ public class ReservaService {
         }
     }
 
-    public void deletar(Long id) {
-        var reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
-        reservaRepository.delete(reserva);
+    public void deletarPorId(Long id) {
+       if (!reservaRepository.existsById(id)) {
+           throw new ResourceNotFoundException("Reserva não encontrada");
+       }
+       reservaRepository.deleteById(id);
     }
 }
 

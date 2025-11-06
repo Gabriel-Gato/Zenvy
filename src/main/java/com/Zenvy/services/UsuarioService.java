@@ -107,8 +107,10 @@ public class UsuarioService {
     }
 
     public void deletarPorId(Long id) {
-        var usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Login não encontrado"));
-        usuarioRepository.delete(usuario);
+       if (!usuarioRepository.existsById(id)) {
+           throw new ResourceNotFoundException("Usuário não encontrado");
+       }
+       usuarioRepository.deleteById(id);
     }
 
     public Usuario autenticar(String email, String senha) {

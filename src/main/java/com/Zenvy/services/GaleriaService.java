@@ -65,7 +65,9 @@ public class GaleriaService {
     }
 
     public void deletarPorId(Long id){
-        var galeria = galeriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Foto não encontrada"));
-        galeriaRepository.delete(galeria);
+        if (!galeriaRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Galeria não encontrada");
+        }
+        galeriaRepository.deleteById(id);
     }
 }
