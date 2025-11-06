@@ -49,7 +49,7 @@ public class AvaliacaoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        avaliacaoService.deletar(id);
+        avaliacaoService.deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
 

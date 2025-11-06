@@ -57,7 +57,7 @@ public class ReservaController {
 
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        reservaService.deletar(id);
+        reservaService.deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
 }
