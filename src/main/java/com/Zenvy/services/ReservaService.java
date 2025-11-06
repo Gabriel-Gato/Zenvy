@@ -1,10 +1,10 @@
 package com.Zenvy.services;
 
 import com.Zenvy.config.EmailService;
+import com.Zenvy.exceptions.BusinessException;
+import com.Zenvy.exceptions.ResourceNotFoundException;
 import com.Zenvy.models.enums.StatusReserva;
-import com.Zenvy.models.Imovel;
 import com.Zenvy.models.Reserva;
-import com.Zenvy.models.Usuario;
 import com.Zenvy.repositories.ImovelRepository;
 import com.Zenvy.repositories.ReservaRepository;
 import com.Zenvy.repositories.UsuarioRepository;
@@ -19,26 +19,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservaService {
 
-    private ReservaRepository reservaRepository;
-    private ImovelRepository imovelRepository;
-    private UsuarioRepository usuarioRepository;
+    private final ReservaRepository reservaRepository;
+    private final ImovelRepository imovelRepository;
+    private final UsuarioRepository usuarioRepository;
     private final EmailService emailService;
 
 
     public Reserva criarReserva(Long imovelId, Long hospedeId, Reserva reserva) {
-        Imovel imovel = imovelRepository.findById(imovelId)
-                .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
+        var imovel = imovelRepository.findById(imovelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado"));
 
-        Usuario hospede = usuarioRepository.findById(hospedeId)
-                .orElseThrow(() -> new IllegalArgumentException("Hóspede não encontrado"));
+        var hospede = usuarioRepository.findById(hospedeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Hóspede não encontrado"));
 
 
         if (reserva.getDataCheckin() == null || reserva.getDataCheckout() == null) {
-            throw new IllegalArgumentException("Datas de check-in e check-out são obrigatórias");
+            throw new BusinessException("Datas de check-in e check-out são obrigatórias");
         }
 
         if (reserva.getDataCheckout().isBefore(reserva.getDataCheckin())) {
-            throw new IllegalArgumentException("Data de checkout não pode ser antes do checkin");
+            throw new BusinessException("Data de checkout não pode ser antes do checkin");
         }
 
 
@@ -47,7 +47,7 @@ public class ReservaService {
             boolean conflito = !(reserva.getDataCheckout().isBefore(r.getDataCheckin()) ||
                     reserva.getDataCheckin().isAfter(r.getDataCheckout()));
             if (conflito && r.getStatus() != StatusReserva.CANCELADA) {
-                throw new IllegalArgumentException("Imóvel já reservado para o período selecionado");
+                throw new BusinessException("Imóvel já reservado para o período selecionado");
             }
         }
 
@@ -60,7 +60,7 @@ public class ReservaService {
         reserva.setHospede(hospede);
         reserva.setStatus(StatusReserva.CONFIRMADA);
 
-        Reserva reservaSalva = reservaRepository.save(reserva);
+        var reservaSalva = reservaRepository.save(reserva);
 
         try {
             emailService.enviarConfirmacaoDeReserva(
@@ -95,8 +95,8 @@ public class ReservaService {
     }
 
     public Reserva atualizar(Long id, Reserva reservaAtualizada) {
-        Reserva reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva não encontrada"));
+        var reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
 
         if (reservaAtualizada.getDataCheckin() != null)
             reserva.setDataCheckin(reservaAtualizada.getDataCheckin());
@@ -115,8 +115,8 @@ public class ReservaService {
 
 
     public void cancelarReserva(Long reservaId) {
-        Reserva reserva = reservaRepository.findById(reservaId)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva não encontrada"));
+        var reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
 
         reserva.setStatus(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
@@ -136,8 +136,8 @@ public class ReservaService {
     }
 
     public void deletar(Long id) {
-        Reserva reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva não encontrada"));
+        var reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
         reservaRepository.delete(reserva);
     }
 }
