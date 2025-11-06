@@ -1,45 +1,43 @@
 package com.Zenvy.services;
 
 
+import com.Zenvy.exceptions.BusinessException;
+import com.Zenvy.exceptions.ResourceNotFoundException;
 import com.Zenvy.models.Imovel;
-import com.Zenvy.models.Usuario;
 import com.Zenvy.repositories.ImovelRepository;
 import com.Zenvy.repositories.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ImovelService {
 
-    @Autowired
-    private ImovelRepository imovelRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final ImovelRepository imovelRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public Imovel salvarImagem(long id, MultipartFile file) throws IOException {
-        String uploadDIR = "uploads/imagemImoveis";
+        var uploadDIR = "uploads/imagemImoveis";
 
-        Path uploadPath = Paths.get(uploadDIR);
-        if (!Files.exists(uploadPath)){
+        var uploadPath = Paths.get(uploadDIR);
+        if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        String nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path caminho = uploadPath.resolve(nomeArquivo);
+        var nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        var caminho = uploadPath.resolve(nomeArquivo);
         Files.copy(
                 file.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
 
-        Imovel imovel = imovelRepository.findById(id).orElseThrow(() -> new RuntimeException("Imovel não encontrado"));
+        var imovel = imovelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Imovel não encontrado"));
 
         imovel.setImagem(nomeArquivo);
         return imovelRepository.save(imovel);
@@ -48,11 +46,11 @@ public class ImovelService {
 
     public Imovel cadastrar(Imovel imovel) {
         if (imovel.getAnfitriao() == null || imovel.getAnfitriao().getId() == null) {
-            throw new IllegalArgumentException("O imóvel deve ter um anfitrião válido.");
+            throw new BusinessException("O imóvel deve ter um anfitrião válido.");
         }
 
-        Usuario anfitriao = usuarioRepository.findById(imovel.getAnfitriao().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Anfitrião não encontrado."));
+        var anfitriao = usuarioRepository.findById(imovel.getAnfitriao().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Anfitrião não encontrado."));
 
         imovel.setAnfitriao(anfitriao);
         return imovelRepository.save(imovel);
@@ -60,8 +58,8 @@ public class ImovelService {
 
 
     public Imovel atualizar(Long id, Imovel imovelAtualizado) {
-        Imovel imovel = imovelRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado."));
+        var imovel = imovelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
 
         if (imovelAtualizado.getNome() != null)
             imovel.setNome(imovelAtualizado.getNome());
@@ -99,7 +97,7 @@ public class ImovelService {
 
     public Imovel buscarPorId(Long id) {
         return imovelRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
     }
 
 
@@ -109,10 +107,9 @@ public class ImovelService {
 
 
     public void deletar(Long id) {
-        Imovel imovel = imovelRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado."));
+        var imovel = imovelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
         imovelRepository.delete(imovel);
     }
-
 }
 

@@ -1,39 +1,39 @@
 package com.Zenvy.services;
 
+import com.Zenvy.exceptions.ResourceNotFoundException;
 import com.Zenvy.models.Galeria;
 import com.Zenvy.repositories.GaleriaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class GaleriaService {
 
-    @Autowired
-    private GaleriaRepository galeriaRepository;
+    private final GaleriaRepository galeriaRepository;
 
     public Galeria salvarImagem(long id, MultipartFile file) throws IOException {
-        String uploadDIR = "uploads/galeria";
+        var uploadDIR = "uploads/galeria";
 
-        Path uploadPath = Paths.get(uploadDIR);
+        var uploadPath = Paths.get(uploadDIR);
         if (!Files.exists(uploadPath)){
             Files.createDirectories(uploadPath);
         }
 
-        String nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path caminho = uploadPath.resolve(nomeArquivo);
+        var nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        var caminho = uploadPath.resolve(nomeArquivo);
         Files.copy(
                 file.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
 
-        Galeria galeria = galeriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Foto não encontrada"));
+        var galeria = galeriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Foto não encontrada"));
 
         galeria.setImagem(nomeArquivo);
         return galeriaRepository.save(galeria);
@@ -51,9 +51,8 @@ public class GaleriaService {
         return galeriaRepository.findById(id).orElse(null);
     }
 
-
     public Galeria atualizar(Long id, Galeria galeriaAtualizada){
-        Galeria galeria = galeriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Foto não encontrada"));
+        var galeria = galeriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Foto não encontrada"));
 
         if(galeriaAtualizada.getImagem() != null)
             galeria.setImagem(galeriaAtualizada.getImagem());
@@ -66,10 +65,7 @@ public class GaleriaService {
     }
 
     public void deletarPorId(Long id){
-        Galeria galeria = galeriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Foto não encontrada"));
+        var galeria = galeriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Foto não encontrada"));
         galeriaRepository.delete(galeria);
     }
-
-
-
 }
