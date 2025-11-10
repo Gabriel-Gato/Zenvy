@@ -20,7 +20,7 @@ public class ImovelController {
     private final ImovelService imovelService;
 
     @PostMapping("/cadastrar")
-    @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')") // ⭐️ Protegido
+    @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Imovel> cadastrar(@RequestBody Imovel imovel) {
         var novoImovel = imovelService.cadastrar(imovel);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoImovel);

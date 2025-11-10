@@ -46,7 +46,7 @@ const Login = () => {
       alert('Login realizado com sucesso!');
 
       // Redireciona baseado na role
-      if (data.usuario.role === 'HOSPEDE') {
+      if (data.usuario.role === 'ROLE_HOSPEDE') {
         navigate('/userProfile');
       } else if (data.usuario.role === 'ANFITRIAO') {
         // Redireciona para a página de gerenciamento do Anfitrião

@@ -27,7 +27,7 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @RequestBody LoginRequest loginRequest) { // ⭐️ CORREÇÃO AQUI
+            @RequestBody LoginRequest loginRequest) {
 
         return ResponseEntity.ok(
                 usuarioService.autenticar(
