@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -42,8 +43,11 @@ public class Imovel {
     @Column(nullable = false)
     private Integer salaDeEstar;
 
-    @Column(nullable = false)
-    private String imagem;
+    @ElementCollection
+    @CollectionTable(name = "imovel_imagens", joinColumns = @JoinColumn(name = "imovel_id"))
+    @Column(name = "nome arquivo", nullable = false)
+    private List<String> imagens = new ArrayList<>();
+
 
     @ElementCollection(targetClass = Comodidade.class)
     @Enumerated(EnumType.STRING)

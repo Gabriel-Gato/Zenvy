@@ -15,41 +15,37 @@ const CasaCard = ({ casa, onEdit, onDelete }) => {
         <div className="CasaCardContainer">
             <img
                 className="CasaImage"
-                src={casa.fotoPrincipalUrl || "https://placehold.co/288x288/A3C4D0/FFFFFF"}
-                alt={casa.titulo}
+                src={
+                    casa.fotos && casa.fotos.length > 0
+                        ? casa.fotos[0]
+                        : "https://placehold.co/288x288/A3C4D0/FFFFFF"
+                }
+                alt={casa.nome || "Imóvel sem título"}
             />
 
-            <div className="CasaTitulo">{casa.titulo || 'Imóvel sem Título'}</div>
-            <div className="CasaPreco">{`R$${casa.valorDiaria ? casa.valorDiaria.toFixed(2) : '0.00'} / noite`}</div>
+            <div className="CasaTitulo">{casa.nome || 'Imóvel sem Título'}</div>
+            <div className="CasaPreco">{`R$${casa.precoPorNoite?.toFixed(2) || '0.00'} / Noite`}</div>
 
             <div className="CasaDetails">
                 <span className="CasaAvaliacao">{casa.avaliacaoMedia || 'S/A'}</span>
-                <img className="IconeEstrela" src="icons/star-icon.svg" alt="Estrela" />
+                <img className="IconeEstrela" src="icons8-star-50 1.png" alt="Estrela" />
                 <div className="Separador"></div>
-                <img className="IconeLocalizacao" src="icons/location-icon.svg" alt="Localização" />
+                <img className="IconeLocalizacao" src="icons8-location-50 1.png" alt="Localização" />
                 <span className="CasaLocalizacao">{casa.localizacao || 'Local Desconhecido'}</span>
             </div>
 
             <div className="CasaActions">
-                <button
-                    onClick={() => onEdit(casa.id)}
-                    className="EditButton"
-                    title="Editar Imóvel"
-                >
-                    <img src="icons/edit-icon.svg" alt="Editar" />
+                <button onClick={() => onEdit(casa.id)} className="EditButton" title="Editar Imóvel">
+                    <img src="icons8-edit-50 1.png" alt="Editar" />
                 </button>
-
-                <button
-                    onClick={() => onDelete(casa.id)}
-                    className="DeleteButton"
-                    title="Excluir Imóvel"
-                >
-                    <img src="icons/delete-icon.svg" alt="Excluir" />
+                <button onClick={() => onDelete(casa.id)} className="DeleteButton" title="Excluir Imóvel">
+                    <img src="icons8-delete-96 9.png" alt="Excluir" />
                 </button>
             </div>
         </div>
     );
 };
+
 
 // -----------------------------------------------------------
 // Componente Principal: GerenciarCasas

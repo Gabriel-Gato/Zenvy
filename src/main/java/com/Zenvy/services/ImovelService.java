@@ -26,24 +26,30 @@ public class ImovelService {
     private final UsuarioRepository usuarioRepository;
     private final AvaliacaoService avaliacaoService;
 
-    public Imovel salvarImagem(long id, MultipartFile file) throws IOException {
+    public Imovel salvarImagens(long id, List<MultipartFile> files) throws IOException {
         var uploadDIR = "uploads/imagemImoveis";
-
         var uploadPath = Paths.get(uploadDIR);
+
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        var nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        var caminho = uploadPath.resolve(nomeArquivo);
-        Files.copy(
-                file.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
+        var imovel = imovelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado"));
 
-        var imovel = imovelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Imovel não encontrado"));
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) continue;
 
-        imovel.setImagem(nomeArquivo);
+            var nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            var caminho = uploadPath.resolve(nomeArquivo);
+
+            Files.copy(file.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
+            imovel.getImagens().add(nomeArquivo);
+        }
+
         return imovelRepository.save(imovel);
     }
+
 
     public Imovel cadastrar(Imovel imovel) {
         if (imovel.getAnfitriao() == null || imovel.getAnfitriao().getId() == null) {
@@ -85,8 +91,8 @@ public class ImovelService {
         if (imovelAtualizado.getSalaDeEstar() != null)
             imovel.setSalaDeEstar(imovelAtualizado.getSalaDeEstar());
 
-        if (imovelAtualizado.getImagem() != null)
-            imovel.setImagem(imovelAtualizado.getImagem());
+        if (imovelAtualizado.getImagens() != null)
+            imovel.setImagens(imovelAtualizado.getImagens());
 
         if (imovelAtualizado.getComodidades() != null)
             imovel.setComodidades(imovelAtualizado.getComodidades());
@@ -101,19 +107,29 @@ public class ImovelService {
     }
 
     public List<ImovelResponseDTO> listarTodos() {
-        var imoveis = imovelRepository.findAll();
+        String baseUrl = "http://localhost:8080/uploads/imagemImoveis/";
 
-        return imoveis.stream()
-                .map(imovel -> new ImovelResponseDTO(
-                        imovel.getId(),
-                        imovel.getNome(),              // vira "titulo"
-                        imovel.getLocalizacao(),
-                        imovel.getPrecoPorNoite(),     // vira "valorDiaria"
-                        imovel.getImagem(),            // vira "fotoPrincipalUrl"
-                        avaliacaoService.calcularMediaPorImovel(imovel.getId()) // média real
-                ))
+        return imovelRepository.findAll().stream()
+                .map(imovel -> {
+                    List<String> fotos = imovel.getImagens() != null
+                            ? imovel.getImagens().stream()
+                            .map(img -> baseUrl + img)
+                            .toList()
+                            : List.of();
+
+                    return new ImovelResponseDTO(
+                            imovel.getId(),
+                            imovel.getNome(),
+                            imovel.getLocalizacao(),
+                            imovel.getPrecoPorNoite(),
+                            fotos,
+                            avaliacaoService.calcularMediaPorImovel(imovel.getId())
+                    );
+                })
                 .toList();
     }
+
+
 
     public void deletarPorId(Long id) {
         if (!imovelRepository.existsById(id)) {
