@@ -1,19 +1,24 @@
 package com.Zenvy.config;
 
 import com.Zenvy.exceptions.EmailException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender mailSender;
 
+
+    public EmailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+
     public void enviarConfirmacaoDeReserva(String to, String subject, String body) {
-        try{
+        try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
             message.setSubject(subject);
@@ -25,6 +30,7 @@ public class EmailService {
             throw new EmailException("Erro ao enviar e-mail de confirmação", ex);
         }
     }
+
 
     public void enviarCancelamentoDeReserva(String to, String subject, String body) {
         try {

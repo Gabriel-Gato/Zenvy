@@ -1,0 +1,314 @@
+/* AdicionarImovel.css */
+
+/* ⚠️ Certifique-se de importar as fontes no seu projeto: 
+   'Kdam Thmor' (para títulos/labels) e 'League Spartan' (para botões).
+*/
+
+:root {
+    --primary-blue: #00AAFF;
+    --dark-gray: #4E4949;
+}
+
+.CriarCasaPage {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 50px 100px;
+    background: white;
+    min-height: 1918px;
+}
+
+.main-title {
+    font-family: 'Kdam Thmor', sans-serif;
+    font-size: 48px;
+    color: var(--dark-gray);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.grid-layout {
+    display: flex;
+    justify-content: flex-start; /* Alinha tudo à esquerda */
+    gap: 80px;
+    margin-bottom: 60px;
+}
+
+/* --- COLUNA ESQUERDA (IMAGENS & COMODIDADES) --- */
+.coluna-esquerda {
+    flex-shrink: 0;
+    width: 533px;
+}
+
+/* Box ajustada para múltiplas imagens */
+.upload-box {
+    width: 533px;
+    height: auto;
+    min-height: 509px;
+    background: white;
+    box-shadow: 5px 4px 6.5px 6px rgba(0, 0, 0, 0.25);
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 40px;
+    padding: 20px; /* Adiciona padding interno */
+    box-sizing: border-box;
+}
+
+.hidden-file-input {
+    display: none;
+}
+
+.upload-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.IconeUpload {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.UploadText {
+    color: black;
+    font-size: 32px;
+    font-family: 'Kdam Thmor', sans-serif;
+    line-height: 40px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Estilos de preview de múltiplas imagens */
+.preview-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.preview-text {
+    font-size: 24px;
+    font-family: 'Kdam Thmor', sans-serif;
+    color: var(--dark-gray);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.thumbnails-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+    justify-items: center;
+    margin-bottom: 10px;
+}
+
+.thumbnail {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Botão grande de Comodidades (Figma) */
+.btn-comodidades-large {
+    width: 279px;
+    height: 84px;
+    background: var(--primary-blue);
+    border-radius: 25px;
+    border: none;
+    color: white;
+    font-size: 32px;
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 100px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    /* Alinhamento ao centro da coluna esquerda */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-comodidades-large:hover {
+    background-color: #0088cc;
+}
+
+/* --- COLUNA DIREITA (INPUTS) --- */
+.coluna-direita {
+    flex-grow: 1;
+    max-width: 700px;
+}
+
+.field-label {
+    display: block;
+    color: black;
+    font-size: 32px;
+    font-family: 'Kdam Thmor', sans-serif;
+    line-height: 40px;
+    margin-bottom: 5px;
+}
+
+.input-field {
+    height: 82px;
+    border-radius: 25px;
+    border: 1px black solid;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.input-field input, .input-field select {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+    color: var(--dark-gray);
+}
+
+.input-field select {
+    appearance: none;
+    padding-right: 10px;
+}
+
+.full-width {
+    width: 596px;
+}
+
+/* ⭐️ CORREÇÃO DE ALINHAMENTO AQUI ⭐️ */
+.row-fields {
+    display: flex;
+    gap: 40px;
+    width: auto;
+    margin-bottom: 30px;
+
+    /* 🔑 NOVIDADE: Alinha o conteúdo dos grupos pela parte de baixo */
+    align-items: flex-end;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.half-width {
+    width: 248px; /* Largura dos campos menores */
+}
+
+.large-width {
+    width: 389px; /* Largura do campo Localização */
+}
+
+/* --- DESCRIÇÃO --- */
+.descricao-section {
+    margin-top: 100px;
+    padding: 0 50px;
+}
+
+.descricao-title {
+    color: black;
+    font-size: 48px;
+    font-family: 'Kdam Thmor', sans-serif;
+    line-height: 40px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.descricao-textarea {
+    width: 100%;
+    height: 852px;
+    border: 1px black solid;
+    border-radius: 25px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.descricao-textarea textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+
+/* --- BOTÃO FINAL DE CRIAÇÃO --- */
+.btn-criar-imovel {
+    width: 442px;
+    height: 126px;
+    background: var(--primary-blue);
+    border-radius: 25px;
+    border: none;
+    color: white;
+    font-size: 48px;
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+    margin: 60px auto 0 auto;
+    display: block;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn-criar-imovel:hover:not(:disabled) {
+    background-color: #0088cc;
+}
+
+.btn-criar-imovel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --- MENSAGENS DE FEEDBACK --- */
+.feedback-message {
+    text-align: center;
+    font-size: 18px;
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.feedback-message.error {
+    color: white;
+    background-color: #ff4d4d;
+    border: 1px solid #cc0000;
+}
+
+.feedback-message.success {
+    color: white;
+    background-color: #4CAF50;
+    border: 1px solid #388E3C;
+}

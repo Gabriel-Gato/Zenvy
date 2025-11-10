@@ -1,8 +1,75 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
 const LandingPage = () => {
+  const [user, setUser] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [activeFaq, setActiveFaq] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    carregarUsuario();
+    carregarGaleria();
+  }, []);
+
+  // Carrega dados do usuário
+  const carregarUsuario = () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    fetch('http://localhost:8080/usuarios/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Erro ao carregar usuário');
+        return res.json();
+      })
+      .then(data => {
+        setUser({
+          ...data,
+          fotoPerfil: data.fotoPerfil
+            ? `http://localhost:8080/uploads/fotosUsuarios/${data.fotoPerfil}`
+            : 'https://placehold.co/60x60?text=User',
+        });
+      })
+      .catch(() => localStorage.removeItem('usuario'));
+  };
+
+  // Carrega imagens da galeria
+  const carregarGaleria = () => {
+    fetch('http://localhost:8080/galeria')
+      .then(res => {
+        if (!res.ok) throw new Error('Erro ao carregar galeria');
+        return res.json();
+      })
+      .then(data => {
+        const urls = data.map(img => `http://localhost:8080/uploads/galeria/${img.imagem}`);
+        setGalleryImages(urls);
+      })
+      .catch(err => console.error(err));
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('usuario');
+    setUser(null);
+    navigate('/');
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex(prev => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex(prev => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+  };
+
+  const toggleFaq = (index) => {
+    setActiveFaq(activeFaq === index ? null : index);
+  };
+
+  // FAQ e features
   const faqQuestions = [
     {
       question: "Como faço para reservar a hospedagem?",
@@ -44,59 +111,46 @@ const LandingPage = () => {
     }
   ];
 
-  // Imagens para o carrossel - 878x700
-  const galleryImages = [
-    "Rectangle 8.png",
-    "Rectangle 9.png",
-    "Rectangle 10.png",
-    "https://placehold.co/878x700/00AAFF/white?text=Quarto+Suite",
-    "https://placehold.co/878x700/00AAFF/white?text=Area+Externa"
-  ];
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [activeFaq, setActiveFaq] = useState(null);
-
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1
-    );
-  };
-
-  const toggleFaq = (index) => {
-    setActiveFaq(activeFaq === index ? null : index);
-  };
-
   return (
     <div className="landing-page">
-      {/* Header/Navigation */}
+      {/* Header */}
       <header className="header">
         <nav className="nav">
           <div className="nav-logo">
-            <img
-              src="icons8-chalé-100 1.png"
-              alt="Zenvy Logo"
-              className="logo-image"
-            />
+            <img src="icons8-chalé-100 1.png" alt="Zenvy Logo" className="logo-image" />
           </div>
-        <div className="nav-links">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/casas" className="nav-link">Casas</Link>
-          <Link to="/contato" className="nav-link">Contato</Link>
-        </div>
+
+          <div className="nav-links">
+            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/casas" className="nav-link">Casas</Link>
+            <Link to="/contato" className="nav-link">Contato</Link>
+          </div>
+
           <div className="nav-buttons">
-            <Link to="/login" className="btn-login">Login</Link>
-            <Link to="/cadastro" className="btn-cadastrar">Cadastra-se</Link>
+            {user ? (
+              <div className="user-info">
+                <img
+                  src={user.fotoPerfil}
+                  alt="Usuário"
+                  className="user-avatar"
+                  onClick={() => navigate(user.role === 'ROLE_ANFITRIAO' ? '/adminPanel' : '/userProfile')}
+                />
+                <span className="user-greeting">
+                  Olá, <span className="user-name">{user.nome}</span>
+                </span>
+                <button onClick={handleLogout} className="btn-logout" title="Sair">⏻</button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="btn-login">Login</Link>
+                <Link to="/cadastro" className="btn-cadastrar">Cadastrar-se</Link>
+              </>
+            )}
           </div>
         </nav>
       </header>
 
-      {/* Hero Section - Texto à ESQUERDA */}
+      {/* Hero */}
       <section className="hero" id="home">
         <div className="hero-overlay"></div>
         <div className="hero-content">
@@ -105,14 +159,14 @@ const LandingPage = () => {
               Faça sua melhor<br />
               Estadia em uma<br />
               das nossas<br />
-              Residencias
+              Residências
             </h1>
             <button className="btn-reserva">Reserve já</button>
           </div>
         </div>
       </section>
 
-      {/* About Section */}
+      {/* About */}
       <section className="about" id="sobre">
         <h2 className="section-title">
           <span className="title-text">Sobre</span>
@@ -123,23 +177,15 @@ const LandingPage = () => {
             <img src="Rectangle 7.png" alt="Camila - Anfitriã" />
           </div>
           <div className="about-text">
-            <p>
-              <strong>Olá! Sou a Camila</strong>, anfitriã apaixonada por receber pessoas de todos os cantos e tornar cada estadia uma experiência inesquecível. Amo viajar, conhecer novas culturas e acredito que a hospitalidade é uma forma de carinho.
-            </p>
-            <p>
-              Meu espaço foi preparado com muito cuidado e atenção aos detalhes - quero que você se sinta à vontade, como se estivesse na sua própria casa. Gosto de pensar que cada hóspede leva um pedacinho das boas energias que já passaram por aqui.
-            </p>
-            <p>
-              Quando não estou recebendo hóspedes, estou explorando novos destinos, tomando um café ao pôr do sol ou buscando ideias para deixar meu cantinho ainda mais acolhedor.
-            </p>
-            <p className="welcome-message">
-              <strong>Seja bem-vindo(a)! 💛</strong>
-            </p>
+            <p><strong>Olá! Sou a Camila</strong>, anfitriã apaixonada por receber pessoas de todos os cantos e tornar cada estadia uma experiência inesquecível. Amo viajar, conhecer novas culturas e acredito que a hospitalidade é uma forma de carinho.</p>
+            <p>Meu espaço foi preparado com muito cuidado e atenção aos detalhes - quero que você se sinta à vontade, como se estivesse na sua própria casa. Gosto de pensar que cada hóspede leva um pedacinho das boas energias que já passaram por aqui.</p>
+            <p>Quando não estou recebendo hóspedes, estou explorando novos destinos, tomando um café ao pôr do sol ou buscando ideias para deixar meu cantinho ainda mais acolhedor.</p>
+            <p className="welcome-message"><strong>Seja bem-vindo(a)! 💛</strong></p>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features */}
       <section className="features" id="porque-escolher">
         <h2 className="section-title">
           <span className="title-text">Por que me </span>
@@ -156,64 +202,48 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Gallery Section - AGORA COM CARROSSEL */}
+      {/* Gallery Dinâmica */}
       <section className="gallery" id="galeria">
-        <h2 className="section-title">
-          <span className="title-highlight">Galeria</span>
-        </h2>
-        <div className="carousel-container">
-          <div className="carousel">
-            <button className="carousel-btn carousel-btn-prev" onClick={prevImage}>
-              ‹
-            </button>
-
-            <div className="carousel-image-container">
-              <img
-                src={galleryImages[currentImageIndex]}
-                alt={`Espaço ${currentImageIndex + 1}`}
-                className="carousel-image"
-              />
+        <h2 className="section-title"><span className="title-highlight">Galeria</span></h2>
+        {galleryImages.length === 0 ? (
+          <p>Nenhuma imagem na galeria.</p>
+        ) : (
+          <div className="carousel-container">
+            <div className="carousel">
+              <button className="carousel-btn carousel-btn-prev" onClick={prevImage}>‹</button>
+              <div className="carousel-image-container">
+                <img
+                  src={galleryImages[currentImageIndex]}
+                  alt={`Espaço ${currentImageIndex + 1}`}
+                  className="carousel-image"
+                />
+              </div>
+              <button className="carousel-btn carousel-btn-next" onClick={nextImage}>›</button>
             </div>
-
-            <button className="carousel-btn carousel-btn-next" onClick={nextImage}>
-              ›
-            </button>
+            <div className="carousel-indicators">
+              {galleryImages.map((_, index) => (
+                <button
+                  key={index}
+                  className={`carousel-indicator ${index === currentImageIndex ? 'active' : ''}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                />
+              ))}
+            </div>
           </div>
-
-          <div className="carousel-indicators">
-            {galleryImages.map((_, index) => (
-              <button
-                key={index}
-                className={`carousel-indicator ${index === currentImageIndex ? 'active' : ''}`}
-                onClick={() => setCurrentImageIndex(index)}
-              />
-            ))}
-          </div>
-        </div>
+        )}
       </section>
 
-      {/* FAQ Section - AGORA INTERATIVO */}
+      {/* FAQ */}
       <section className="faq" id="faq">
-        <h2 className="section-title">
-          <span className="title-highlight">FAQ</span>
-        </h2>
+        <h2 className="section-title"><span className="title-highlight">FAQ</span></h2>
         <div className="faq-list">
           {faqQuestions.map((item, index) => (
             <div key={index} className="faq-item">
-              <div
-                className="faq-question"
-                onClick={() => toggleFaq(index)}
-              >
+              <div className="faq-question" onClick={() => toggleFaq(index)}>
                 <span>{item.question}</span>
-                <button className={`faq-toggle ${activeFaq === index ? 'active' : ''}`}>
-                  ▼
-                </button>
+                <button className={`faq-toggle ${activeFaq === index ? 'active' : ''}`}>▼</button>
               </div>
-              {activeFaq === index && (
-                <div className="faq-answer">
-                  <p>{item.answer}</p>
-                </div>
-              )}
+              {activeFaq === index && <div className="faq-answer"><p>{item.answer}</p></div>}
             </div>
           ))}
         </div>
@@ -225,21 +255,11 @@ const LandingPage = () => {
           <div className="footer-section">
             <h3>Contato</h3>
             <div className="contact-info">
-              <div className="contact-item">
-                <span className="contact-icon">📧</span>
-                <span>camila.silva@email.com</span>
-              </div>
-              <div className="contact-item">
-                <span className="contact-icon">📱</span>
-                <span>(11) 98765-4321</span>
-              </div>
-              <div className="contact-item">
-                <span className="contact-icon">📞</span>
-                <span>(11) 3234-5678</span>
-              </div>
+              <div className="contact-item"><span className="contact-icon">📧</span><span>camila.silva@email.com</span></div>
+              <div className="contact-item"><span className="contact-icon">📱</span><span>(11) 98765-4321</span></div>
+              <div className="contact-item"><span className="contact-icon">📞</span><span>(11) 3234-5678</span></div>
             </div>
           </div>
-
           <div className="footer-section">
             <h3>Redes Sociais</h3>
             <div className="social-links">
@@ -248,7 +268,6 @@ const LandingPage = () => {
               <a href="#" className="social-link">Instagram</a>
             </div>
           </div>
-
           <div className="footer-section">
             <h3>Legal</h3>
             <div className="legal-links">
@@ -257,7 +276,6 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-
         <div className="footer-bottom">
           <p>&copy; 2025 Zenvy. Todos os direitos reservados.</p>
         </div>

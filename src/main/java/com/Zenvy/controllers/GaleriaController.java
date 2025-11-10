@@ -64,4 +64,14 @@ public class GaleriaController {
         galeriaService.deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/upload/{id}/multiplos")
+    public ResponseEntity<List<Galeria>> salvarImagens(
+            @PathVariable Long id,
+            @RequestParam("files") MultipartFile[] files) throws IOException {
+
+        List<Galeria> imagensSalvas = galeriaService.salvarImagens(id, files);
+        return ResponseEntity.status(HttpStatus.CREATED).body(imagensSalvas);
+    }
+
 }

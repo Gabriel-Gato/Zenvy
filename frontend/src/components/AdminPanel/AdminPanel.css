@@ -1,0 +1,141 @@
+:root {
+  --primary-color: #00aaff;
+  --text-color: #222;
+  --border-radius: 20px;
+  --transition: all 0.3s ease;
+  --font-title: "League Spartan", sans-serif;
+  --font-text: "Libre Caslon Display", serif;
+}
+
+.admin-panel {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  font-family: var(--font-title);
+  color: var(--text-color);
+}
+
+/* ===== HEADER ===== */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 50px;
+  border-bottom: 2px solid #eee;
+}
+
+.welcome-line {
+  font-size: 18px;
+  font-family: var(--font-text);
+  white-space: nowrap;
+}
+
+.user-name {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* ===== LOGOUT BUTTON ===== */
+.logout-button {
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-button img {
+  width: 22px;
+  height: 22px;
+}
+
+.logout-button:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+/* ===== CONTEÚDO ===== */
+.admin-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 40px;
+  padding: 70px;
+  justify-items: center;
+}
+
+.admin-card {
+  width: 260px;
+  height: 260px;
+  border: 2px solid #000;
+  border-radius: var(--border-radius);
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: var(--transition);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* 👈 Agora mostra o cursor de clique */
+}
+
+.admin-card:hover {
+  transform: translateY(-5px) scale(1.03);
+  background: #f5faff;
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 20px rgba(0, 170, 255, 0.3);
+}
+
+.admin-card:active {
+  transform: scale(0.98);
+}
+
+.card-icon {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 15px;
+  transition: var(--transition);
+}
+
+.admin-card:hover .card-icon {
+  transform: scale(1.1);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ===== FOOTER ===== */
+.admin-footer {
+  margin-top: auto;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.back-home {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #000;
+  border-radius: 50px;
+  padding: 14px 30px;
+  background: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.back-home:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.back-home img {
+  width: 22px;
+  height: 22px;
+}

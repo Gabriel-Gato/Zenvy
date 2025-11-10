@@ -1,6 +1,6 @@
 package com.Zenvy.services;
 
-
+import com.Zenvy.dto.AuthResponse;
 import com.Zenvy.exceptions.BusinessException;
 import com.Zenvy.exceptions.ResourceNotFoundException;
 import com.Zenvy.models.enums.Role;
@@ -24,41 +24,30 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public Usuario salvarImagem(long id, MultipartFile file) throws IOException {
         var uploadDIR = "uploads/fotosUsuarios";
-
         var uploadPath = Paths.get(uploadDIR);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
+        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
 
         var nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
         var caminho = uploadPath.resolve(nomeArquivo);
-        Files.copy(
-                file.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(file.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
 
-        var usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado"));
-
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado"));
         usuario.setFotoPerfil(nomeArquivo);
         return usuarioRepository.save(usuario);
     }
 
     public Usuario cadastrar(Usuario usuario) {
-        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new BusinessException("Email ja Cadastrado");
-        }
+        if (usuarioRepository.existsByEmail(usuario.getEmail()))
+            throw new BusinessException("Email ja cadastrado");
 
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        if (usuario.getRole() == null) usuario.setRole(Role.ROLE_HOSPEDE);
 
-        if (usuario.getRole() == null) {
-            usuario.setRole(Role.HOSPEDE);
-        }
-
-        return usuarioRepository.save(usuario);
-    }
-
-    public Usuario salvar(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
@@ -66,73 +55,72 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado com o email: " + email));
-    }
-
     public Usuario buscarPorId(Long id) {
-        return usuarioRepository.findById(id).orElse(null);
+        return usuarioRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Usuario não encontrado"));
     }
 
     public Usuario atualizar(Long id, Usuario usuarioAtualizado) {
-        var usuario = usuarioRepository.findById(id)
+        Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado"));
 
-        if (usuarioAtualizado.getTelefone() != null && !usuarioAtualizado.getTelefone().isEmpty()) {
+        if (usuarioAtualizado.getNome() != null && !usuarioAtualizado.getNome().isEmpty())
+            usuario.setNome(usuarioAtualizado.getNome());
+
+        if (usuarioAtualizado.getTelefone() != null && !usuarioAtualizado.getTelefone().isEmpty())
             usuario.setTelefone(usuarioAtualizado.getTelefone());
-        }
-
-        if (usuarioAtualizado.getFotoPerfil() != null && !usuarioAtualizado.getFotoPerfil().isEmpty()) {
-            usuario.setFotoPerfil(usuarioAtualizado.getFotoPerfil());
-        }
-
 
         if (usuarioAtualizado.getEmail() != null && !usuarioAtualizado.getEmail().equals(usuario.getEmail())) {
-            if (usuarioRepository.existsByEmail(usuarioAtualizado.getEmail())) {
-                throw new BusinessException("Email ja cadastrado");
-            }
+            if (usuarioRepository.existsByEmail(usuarioAtualizado.getEmail()))
+                throw new BusinessException("Email já cadastrado");
             usuario.setEmail(usuarioAtualizado.getEmail());
         }
 
-        if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isEmpty()) {
+        if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isEmpty())
             usuario.setSenha(passwordEncoder.encode(usuarioAtualizado.getSenha()));
-        }
 
         return usuarioRepository.save(usuario);
     }
 
-    public void deletar(Usuario usuario) {
-        usuarioRepository.delete(usuario);
-    }
-
     public void deletarPorId(Long id) {
-       if (!usuarioRepository.existsById(id)) {
-           throw new ResourceNotFoundException("Usuário não encontrado");
-       }
-       usuarioRepository.deleteById(id);
+        if (!usuarioRepository.existsById(id))
+            throw new ResourceNotFoundException("Usuário não encontrado");
+        usuarioRepository.deleteById(id);
     }
 
-    public Usuario autenticar(String email, String senha) {
-        var usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado"));
+    public AuthResponse autenticar(String email, String senha) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        if (usuario != null && passwordEncoder.matches(senha, usuario.getSenha())) {
-            return usuario;
-        } else {
+        if (!passwordEncoder.matches(senha, usuario.getSenha()))
             throw new IllegalArgumentException("Senha incorreta");
-        }
 
+
+        String accessToken = jwtService.generateAccessToken(usuario);
+        String refreshToken = jwtService.generateRefreshToken(usuario);
+
+        return new AuthResponse(accessToken, refreshToken, usuario);
+    }
+
+    public AuthResponse refreshToken(String refreshToken) {
+        String email = jwtService.extractUsername(refreshToken);
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+
+        if (!jwtService.isTokenValid(refreshToken, usuario))
+            throw new IllegalArgumentException("Refresh token inválido ou expirado");
+
+
+        String newAccessToken = jwtService.generateAccessToken(usuario);
+        String newRefreshToken = jwtService.generateRefreshToken(usuario);
+
+        return new AuthResponse(newAccessToken, newRefreshToken, usuario);
     }
 
     public boolean verificarSenha(String email, String senha) {
-        var usuario = usuarioRepository.findByEmail(email)
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado"));
-        if (usuario == null) {
-            return false;
-        }
-
         return passwordEncoder.matches(senha, usuario.getSenha());
     }
-
 }

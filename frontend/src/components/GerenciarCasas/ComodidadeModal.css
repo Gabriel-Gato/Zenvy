@@ -1,0 +1,91 @@
+/* ComodidadeModal.css */
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.comodidade-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 900px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.comodidade-modal-content h2 {
+    font-family: 'Kdam Thmor', sans-serif;
+    font-size: 36px;
+    color: var(--dark-gray);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.comodidade-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.modal-column {
+    flex: 1;
+    min-width: 250px;
+}
+
+.comodidade-item {
+    margin-bottom: 15px;
+}
+
+.comodidade-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+}
+
+.comodidade-item input[type="checkbox"] {
+    margin-right: 15px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-blue);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 600;
+}
+
+.btn-cancel {
+    background: #ccc;
+    color: var(--dark-gray);
+    border: none;
+}
+
+.btn-save {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+}

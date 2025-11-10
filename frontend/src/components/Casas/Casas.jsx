@@ -1,9 +1,60 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import FiltrosModal from './FiltrosModal';
 import './Casas.css';
 
 const Casas = () => {
+  // LÓGICA DA NAV BAR (Copiada da LandingPage)
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  // Função para carregar dados do usuário
+  const carregarUsuario = () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    fetch('http://localhost:8080/usuarios/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => {
+        if (!res.ok) {
+          localStorage.removeItem('accessToken');
+          throw new Error('Erro ao carregar usuário');
+        }
+        return res.json();
+      })
+      .then(data => {
+        setUser({
+          ...data,
+          fotoPerfil: data.fotoPerfil
+            ? `http://localhost:8080/uploads/fotosUsuarios/${data.fotoPerfil}`
+            : 'https://placehold.co/60x60?text=User',
+        });
+      })
+      .catch(() => {
+        localStorage.removeItem('accessToken');
+        setUser(null);
+      });
+  };
+
+  // Efeito para carregar o usuário ao montar o componente
+  useEffect(() => {
+    carregarUsuario();
+  }, []);
+
+  // Função para logout
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    setUser(null);
+    navigate('/');
+    window.location.reload();
+  };
+  // FIM DA LÓGICA DA NAV BAR
+
+  // LÓGICA DE BUSCA E FILTRO (MANTIDA)
   const [searchData, setSearchData] = useState({
     local: '',
     checkIn: '',
@@ -80,7 +131,6 @@ const Casas = () => {
     setFiltrosAtivos(filtros);
     console.log('Filtros aplicados:', filtros);
     // Aqui você faria a requisição para o backend com os filtros
-    // Exemplo: fetchCasasComFiltros(filtros);
   };
 
   // Função para verificar se há filtros ativos
@@ -107,38 +157,42 @@ const Casas = () => {
 
   return (
     <div className="casas-page">
-      {/* Header/Navigation */}
+      {/* 🏡 Header/Navigation - CÓDIGO DA LANDING PAGE INTEGRADO */}
       <header className="header">
         <nav className="nav">
           <div className="nav-logo">
-            <img
-              src="icons8-chalé-100 1.png"
-              alt="Zenvy Logo"
-              className="logo-image"
-            />
+            <Link to="/">
+              <img src="icons8-chalé-100 1.png" alt="Zenvy Logo" className="logo-image" />
+            </Link>
           </div>
+
           <div className="nav-links">
             <Link to="/" className="nav-link">Home</Link>
-            <Link to="/casas" className="nav-link active">Casas</Link>
-            <a href="#contato" className="nav-link">Contato</a>
+            <Link to="/casas" className="nav-link">Casas</Link>
+            <Link to="/contato" className="nav-link">Contato</Link>
           </div>
-          <div className="user-section">
-            <div className="user-greeting">
-              <span className="greeting-text">Olá!</span>
-              <span className="user-name">Lucas</span>
-            </div>
-            <img
-              src="https://placehold.co/126x126"
-              alt="Usuário"
-              className="user-avatar"
-            />
-            <button className="logout-btn">
-              <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 30H10C8.93913 30 7.92172 29.5786 7.17157 28.8284C6.42143 28.0783 6 27.0609 6 26V10C6 8.93913 6.42143 7.92172 7.17157 7.17157C7.92172 6.42143 8.93913 6 10 6H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M21 26L30 17L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M30 17H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+
+          <div className="nav-buttons">
+            {user ? (
+              <div className="user-info">
+                <img
+                  src={user.fotoPerfil}
+                  alt="Usuário"
+                  className="user-avatar"
+                  onClick={() => navigate(user.role === 'ANFITRIAO' ? '/adminPanel' : '/userProfile')}
+                  title="Ver Perfil"
+                />
+                <span className="user-greeting">
+                  Olá, <span className="user-name">{user.nome}</span>
+                </span>
+                <button onClick={handleLogout} className="btn-logout" title="Sair">⏻</button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="btn-login">Login</Link>
+                <Link to="/cadastro" className="btn-cadastrar">Cadastrar-se</Link>
+              </>
+            )}
           </div>
         </nav>
       </header>

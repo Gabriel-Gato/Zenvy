@@ -13,6 +13,9 @@ const Cadastro = () => {
     termosUsuario: false
   });
 
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirmarSenha, setShowConfirmarSenha] = useState(false);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -21,10 +24,9 @@ const Cadastro = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validações básicas
     if (formData.senha !== formData.confirmarSenha) {
       alert('As senhas não coincidem!');
       return;
@@ -35,26 +37,48 @@ const Cadastro = () => {
       return;
     }
 
-    console.log('Dados do cadastro:', formData);
-    // Aqui você adicionaria a lógica de cadastro
+    const cadastroData = {
+      nome: formData.nome,
+      email: formData.email,
+      telefone: formData.telefone,
+      senha: formData.senha
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/usuarios/cadastrar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cadastroData)
+      });
+
+      if (response.ok) {
+        const usuarioCadastrado = await response.json();
+        alert('Cadastro realizado com sucesso! Bem-vindo(a), ' + usuarioCadastrado.nome);
+        window.location.href = '/login';
+      } else {
+        const errorData = await response.json();
+        alert('Erro ao cadastrar: ' + (errorData.message || 'Verifique os dados e tente novamente.'));
+      }
+    } catch (error) {
+      console.error('Erro no cadastro:', error);
+      alert('Erro no cadastro. Tente novamente mais tarde.');
+    }
   };
 
   return (
     <div className="cadastro-page">
-      {/* Background */}
       <div className="cadastro-background">
         <div className="background-overlay"></div>
       </div>
 
-      {/* Container do formulário */}
       <div className="cadastro-container">
         <div className="cadastro-card">
           <h1 className="cadastro-title">Cadastro</h1>
 
           <form className="cadastro-form" onSubmit={handleSubmit}>
             <div className="form-row">
-              {/* Coluna Esquerda */}
               <div className="form-column">
+
                 {/* Email */}
                 <div className="form-group">
                   <label htmlFor="email" className="form-label">Email</label>
@@ -82,7 +106,7 @@ const Cadastro = () => {
                 {/* Senha */}
                 <div className="form-group">
                   <label htmlFor="senha" className="form-label">Senha</label>
-                  <div className="input-container">
+                  <div className="input-container senha-container">
                     <div className="input-icon">
                       <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7 10V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -91,7 +115,7 @@ const Cadastro = () => {
                       </svg>
                     </div>
                     <input
-                      type="password"
+                      type={showSenha ? "text" : "password"}
                       id="senha"
                       name="senha"
                       value={formData.senha}
@@ -100,6 +124,24 @@ const Cadastro = () => {
                       placeholder="Sua senha"
                       required
                     />
+                    <button
+                      type="button"
+                      className="toggle-senha-btn"
+                      onClick={() => setShowSenha(!showSenha)}
+                    >
+                      {showSenha ? (
+                        // Ícone olho aberto
+                        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      ) : (
+                        // Ícone olho fechado
+                        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M17.94 17.94A10.97 10.97 0 0 1 12 20C5 20 1 12 1 12a21.36 21.36 0 0 1 5.06-6.94M9.9 4.24A9.86 9.86 0 0 1 12 4c7 0 11 8 11 8a21.4 21.4 0 0 1-4.06 5.94M1 1l22 22"/>
+                        </svg>
+                      )}
+                    </button>
                   </div>
                   <div className="input-line"></div>
                 </div>
@@ -149,7 +191,7 @@ const Cadastro = () => {
                       value={formData.nome}
                       onChange={handleChange}
                       className="form-input"
-                      placeholder="Seu nome completo"
+                      placeholder="Seu primeiro nome"
                       required
                     />
                   </div>
@@ -159,7 +201,7 @@ const Cadastro = () => {
                 {/* Confirmar Senha */}
                 <div className="form-group">
                   <label htmlFor="confirmarSenha" className="form-label">Confirme a senha</label>
-                  <div className="input-container">
+                  <div className="input-container senha-container">
                     <div className="input-icon">
                       <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7 10V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -168,7 +210,7 @@ const Cadastro = () => {
                       </svg>
                     </div>
                     <input
-                      type="password"
+                      type={showConfirmarSenha ? "text" : "password"}
                       id="confirmarSenha"
                       name="confirmarSenha"
                       value={formData.confirmarSenha}
@@ -177,13 +219,28 @@ const Cadastro = () => {
                       placeholder="Confirme sua senha"
                       required
                     />
+                    <button
+                      type="button"
+                      className="toggle-senha-btn"
+                      onClick={() => setShowConfirmarSenha(!showConfirmarSenha)}
+                    >
+                      {showConfirmarSenha ? (
+                        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      ) : (
+                        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M17.94 17.94A10.97 10.97 0 0 1 12 20C5 20 1 12 1 12a21.36 21.36 0 0 1 5.06-6.94M9.9 4.24A9.86 9.86 0 0 1 12 4c7 0 11 8 11 8a21.4 21.4 0 0 1-4.06 5.94M1 1l22 22"/>
+                        </svg>
+                      )}
+                    </button>
                   </div>
                   <div className="input-line"></div>
                 </div>
               </div>
             </div>
 
-            {/* Checkboxes de Termos */}
             <div className="terms-row">
               <div className="term-group">
                 <label className="checkbox-label">
@@ -196,7 +253,7 @@ const Cadastro = () => {
                   />
                   <span className="checkmark"></span>
                   <span className="term-text">
-                    Concordo com as <span className="term-highlight">Politicas de Privacidade</span>
+                    Concordo com as <span className="term-highlight">Políticas de Privacidade</span>
                   </span>
                 </label>
               </div>
@@ -212,19 +269,17 @@ const Cadastro = () => {
                   />
                   <span className="checkmark"></span>
                   <span className="term-text">
-                    Concordo com os <span className="term-highlight">Termos de Usuario</span>
+                    Concordo com os <span className="term-highlight">Termos de Usuário</span>
                   </span>
                 </label>
               </div>
             </div>
 
-            {/* Botão Criar */}
             <button type="submit" className="cadastro-button">
               Criar
             </button>
           </form>
 
-          {/* Link para Login */}
           <div className="login-link">
             <p>
               Já tem uma conta?{' '}
@@ -234,7 +289,6 @@ const Cadastro = () => {
             </p>
           </div>
 
-          {/* Link para voltar */}
           <div className="back-link">
             <Link to="/" className="back-text">
               ← Voltar para Home
@@ -245,8 +299,5 @@ const Cadastro = () => {
     </div>
   );
 };
-
-//Adicionar logica dps
-
 
 export default Cadastro;

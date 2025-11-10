@@ -107,9 +107,12 @@
 }
 
 .input-container {
-  position: relative;
   display: flex;
   align-items: center;
+  background: transparent;
+  border: none;
+  width: 100%;
+  position: relative;
 }
 
 .input-icon {
@@ -118,8 +121,8 @@
   top: 50%;
   transform: translateY(-50%);
   color: black;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,7 +130,7 @@
 
 .form-input {
   width: 100%;
-  padding: 1rem 0 1rem 2.5rem;
+  padding: 1rem 0 1rem 3.5rem; /* era 2.5rem — aumentei o espaçamento lateral */
   border: none;
   background: transparent;
   font-size: 1.1rem;
@@ -360,4 +363,17 @@
 
 .cadastro-button {
   animation: fadeInUp 0.6s ease-out 0.6s both;
+}
+
+.toggle-senha-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.toggle-password:hover {
+  color: #000;
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,5 +70,13 @@ public class GaleriaService {
             throw new ResourceNotFoundException("Galeria não encontrada");
         }
         galeriaRepository.deleteById(id);
+    }
+
+    public List<Galeria> salvarImagens(Long id, MultipartFile[] files) throws IOException {
+        List<Galeria> salvos = new ArrayList<>();
+        for (MultipartFile file : files) {
+            salvos.add(salvarImagem(id, file));
+        }
+        return salvos;
     }
 }
