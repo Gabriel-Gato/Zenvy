@@ -1,5 +1,6 @@
 package com.Zenvy.controllers;
 
+import com.Zenvy.dto.ImovelResponseDTO;
 import com.Zenvy.models.Imovel;
 import com.Zenvy.models.Usuario;
 import com.Zenvy.services.ImovelService;
@@ -57,9 +58,10 @@ public class ImovelController {
 
     @GetMapping("/listar")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
-    public ResponseEntity<List<Imovel>> listarTodos() {
+    public ResponseEntity<List<ImovelResponseDTO>> listarTodos() {
         return ResponseEntity.ok(imovelService.listarTodos());
     }
+
 
     @PutMapping("/atualizar/{id}")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")

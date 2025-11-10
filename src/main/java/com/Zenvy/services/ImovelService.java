@@ -1,6 +1,7 @@
 package com.Zenvy.services;
 
 
+import com.Zenvy.dto.ImovelResponseDTO;
 import com.Zenvy.exceptions.BusinessException;
 import com.Zenvy.exceptions.ResourceNotFoundException;
 import com.Zenvy.models.Imovel;
@@ -23,6 +24,7 @@ public class ImovelService {
 
     private final ImovelRepository imovelRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AvaliacaoService avaliacaoService;
 
     public Imovel salvarImagem(long id, MultipartFile file) throws IOException {
         var uploadDIR = "uploads/imagemImoveis";
@@ -98,8 +100,19 @@ public class ImovelService {
                 .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
     }
 
-    public List<Imovel> listarTodos() {
-        return imovelRepository.findAll();
+    public List<ImovelResponseDTO> listarTodos() {
+        var imoveis = imovelRepository.findAll();
+
+        return imoveis.stream()
+                .map(imovel -> new ImovelResponseDTO(
+                        imovel.getId(),
+                        imovel.getNome(),              // vira "titulo"
+                        imovel.getLocalizacao(),
+                        imovel.getPrecoPorNoite(),     // vira "valorDiaria"
+                        imovel.getImagem(),            // vira "fotoPrincipalUrl"
+                        avaliacaoService.calcularMediaPorImovel(imovel.getId()) // média real
+                ))
+                .toList();
     }
 
     public void deletarPorId(Long id) {
