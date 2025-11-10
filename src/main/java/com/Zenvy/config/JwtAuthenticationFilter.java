@@ -9,12 +9,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -30,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-
+        // Permite acesso a arquivos estáticos
         if (request.getServletPath().startsWith("/uploads/")) {
             filterChain.doFilter(request, response);
             return;
@@ -52,21 +55,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (usuarioOpt.isPresent()) {
                 Usuario usuario = usuarioOpt.get();
 
-
                 if (jwtService.isTokenValid(jwt, usuario)) {
 
+                    // 🔥 Novo trecho: extrai a role diretamente do token
+                    String role = jwtService.extractClaim(jwt, claims -> claims.get("authorities", String.class));
 
+                    // Cria a lista de authorities a partir do JWT
+                    List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+
+                    // Cria o token de autenticação com a role correta
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     usuario,
                                     null,
-
-                                    usuario.getAuthorities()
+                                    authorities
                             );
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-
+                    // Define o usuário autenticado no contexto de segurança
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }

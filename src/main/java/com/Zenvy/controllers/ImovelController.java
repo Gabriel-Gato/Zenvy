@@ -1,8 +1,10 @@
 package com.Zenvy.controllers;
 
 import com.Zenvy.models.Imovel;
+import com.Zenvy.models.Usuario;
 import com.Zenvy.services.ImovelService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,10 +23,20 @@ public class ImovelController {
 
     @PostMapping("/cadastrar")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
-    public ResponseEntity<Imovel> cadastrar(@RequestBody Imovel imovel) {
+    public ResponseEntity<Imovel> cadastrar(@RequestBody Imovel imovel, Authentication authentication) {
+
+
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+
+        imovel.setAnfitriao(usuarioLogado);
+
+
         var novoImovel = imovelService.cadastrar(imovel);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(novoImovel);
     }
+
 
     @PostMapping("/uploadImagem/{id}")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
