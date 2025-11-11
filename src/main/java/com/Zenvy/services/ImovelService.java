@@ -1,10 +1,12 @@
 package com.Zenvy.services;
 
 
+import com.Zenvy.dto.FiltroImovelRequest;
 import com.Zenvy.dto.ImovelResponseDTO;
 import com.Zenvy.exceptions.BusinessException;
 import com.Zenvy.exceptions.ResourceNotFoundException;
 import com.Zenvy.models.Imovel;
+import com.Zenvy.models.ImovelSpecification;
 import com.Zenvy.repositories.ImovelRepository;
 import com.Zenvy.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,9 @@ public class ImovelService {
         return imovelRepository.save(imovel);
     }
 
+    public List<Imovel> filtrarImoveis(FiltroImovelRequest filtro) {
+        return imovelRepository.findAll(ImovelSpecification.comFiltros(filtro));
+    }
 
     public Imovel cadastrar(Imovel imovel) {
         if (imovel.getAnfitriao() == null || imovel.getAnfitriao().getId() == null) {
