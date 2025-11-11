@@ -4,6 +4,7 @@ import com.Zenvy.dto.AuthResponse;
 import com.Zenvy.dto.LoginRequest;
 import com.Zenvy.models.Usuario;
 import com.Zenvy.services.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,7 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @RequestBody LoginRequest loginRequest) {
+            @RequestBody @Valid LoginRequest loginRequest) {
 
         return ResponseEntity.ok(
                 usuarioService.autenticar(
