@@ -1,9 +1,11 @@
 package com.Zenvy.controllers;
 
+import com.Zenvy.dto.FiltroImovelRequest;
 import com.Zenvy.dto.ImovelResponseDTO;
 import com.Zenvy.models.Imovel;
 import com.Zenvy.models.Usuario;
 import com.Zenvy.services.ImovelService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +24,6 @@ public class ImovelController {
 
     private final ImovelService imovelService;
 
-    // ---------------------------------------------------
-    // Cadastrar imóvel (vinculado ao usuário logado)
-    // ---------------------------------------------------
     @PostMapping("/cadastrar")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Imovel> cadastrar(@RequestBody Imovel imovel, Authentication authentication) {
@@ -35,9 +34,12 @@ public class ImovelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(novoImovel);
     }
 
-    // ---------------------------------------------------
-    // Upload de múltiplas imagens (ou apenas uma)
-    // ---------------------------------------------------
+    @GetMapping("/filtro")
+    public ResponseEntity<List<Imovel>> filtrar(@Valid FiltroImovelRequest filtro) {
+        List<Imovel> resultados = imovelService.filtrarImoveis(filtro);
+        return ResponseEntity.ok(resultados);
+    }
+
     @PostMapping("/uploadImagens/{id}")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Imovel> uploadImagens(
@@ -52,7 +54,6 @@ public class ImovelController {
         return ResponseEntity.ok(imovelAtualizado);
     }
 
-    // ✅ Mantém compatibilidade com upload único (caso o front ainda use)
     @PostMapping("/uploadImagem/{id}")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Imovel> uploadImagem(
@@ -63,9 +64,6 @@ public class ImovelController {
         return ResponseEntity.ok(imovelAtualizado);
     }
 
-    // ---------------------------------------------------
-    // Buscar imóvel por ID
-    // ---------------------------------------------------
     @GetMapping("/{id}")
     public ResponseEntity<Imovel> buscarPorId(@PathVariable Long id) {
         var imovel = imovelService.buscarPorId(id);
