@@ -31,8 +31,8 @@ public class UsuarioController {
 
         return ResponseEntity.ok(
                 usuarioService.autenticar(
-                        loginRequest.getEmail(),
-                        loginRequest.getSenha()
+                        loginRequest.email(),
+                        loginRequest.senha()
                 )
         );
     }
