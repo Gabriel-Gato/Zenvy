@@ -161,9 +161,16 @@ const GerenciarCasas = () => {
         <div className="GerenciarCasasPage">
 
             <div className="header-admin">
-                <img className="Logo" src="icons8-chalé-100 1.png" alt="Zenvy Logo" />
+                <img
+                    className="Logo"
+                    src="icons8-chalé-100 1.png"
+                    alt="Zenvy Logo"
+                    style={{ cursor: 'pointer' }} // opcional: deixa o cursor tipo link
+                    onClick={() => navigate('/adminPanel')} // <-- aqui
+                />
                 <h2>Gerenciar Seus Imóveis</h2>
             </div>
+
 
             <hr className="divider" />
 

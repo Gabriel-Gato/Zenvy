@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './AdicionarImovel.css';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import ComodidadeModal from './ComodidadeModal';
 import { getAccessToken, logout } from '../../services/AuthService/AuthService';
+import './AdicionarImovel.css'; // mantém mesmo CSS
 
 const API_BASE_URL = 'http://localhost:8080/imoveis';
+const BASE_IMAGE_URL = 'http://localhost:8080/uploads/imagemImoveis/';
 
-const AdicionarImovel = () => {
+const EditarImovel = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const [imovelData, setImovelData] = useState({
@@ -18,25 +20,68 @@ const AdicionarImovel = () => {
         descricao: '',
         cozinha: 1,
         salaDeEstar: 1,
-        imagem: '',
         comodidades: [],
     });
 
-    const [imagensFiles, setImagensFiles] = useState([]);
+    const [imagensExistentes, setImagensExistentes] = useState([]);
+    const [novasImagens, setNovasImagens] = useState([]);
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleChange = (e) => {
+    // Carregar dados do imóvel
+    useEffect(() => {
+        const fetchImovel = async () => {
+            const token = getAccessToken();
+            if (!token) {
+                logout();
+                navigate('/login');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!response.ok) throw new Error(`Erro ao buscar imóvel: ${response.status}`);
+                const data = await response.json();
+
+                const fotos = (data.fotos || data.imagens || []).map(foto =>
+                    foto.startsWith('http') ? foto : BASE_IMAGE_URL + foto
+                );
+
+                setImovelData({
+                    nome: data.nome || '',
+                    localizacao: data.localizacao || '',
+                    precoPorNoite: data.precoPorNoite || '',
+                    capacidadeHospedes: data.capacidadeHospedes || '',
+                    quartos: data.quartos || '',
+                    descricao: data.descricao || '',
+                    cozinha: data.cozinha || 1,
+                    salaDeEstar: data.salaDeEstar || 1,
+                    comodidades: data.comodidades || [],
+                });
+
+                setImagensExistentes(fotos);
+            } catch (err) {
+                console.error(err);
+                setMessage('❌ Erro ao carregar imóvel.');
+            }
+        };
+
+        fetchImovel();
+    }, [id, navigate]);
+
+    const handleChange = e => {
         const { name, value } = e.target;
         const newValue = ['precoPorNoite', 'capacidadeHospedes', 'quartos', 'cozinha', 'salaDeEstar']
             .includes(name)
             ? value.replace(/[^0-9.]/g, '')
             : value;
-        setImovelData((prev) => ({ ...prev, [name]: newValue }));
+        setImovelData(prev => ({ ...prev, [name]: newValue }));
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = e => {
         let filesArray = Array.from(e.target.files);
 
         if (filesArray.length > 8) {
@@ -44,47 +89,37 @@ const AdicionarImovel = () => {
             filesArray = filesArray.slice(0, 8);
         }
 
-        setImagensFiles(filesArray);
+        setNovasImagens(filesArray);
     };
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
-    const handleSaveComodidades = (comodidadesArray) => {
-        setImovelData((prev) => ({ ...prev, comodidades: comodidadesArray }));
-    };
+    const handleSaveComodidades = array => setImovelData(prev => ({ ...prev, comodidades: array }));
 
-    const uploadMultiplasImagens = async (imovelId, token) => {
-        if (imagensFiles.length === 0) return true;
+    const uploadNovasImagens = async (imovelId, token) => {
+        if (novasImagens.length === 0) return true;
 
         let sucesso = true;
 
-        for (const [index, file] of imagensFiles.entries()) {
-            setMessage(`Enviando imagem ${index + 1} de ${imagensFiles.length}: ${file.name}...`);
-
+        for (const [index, file] of novasImagens.entries()) {
+            setMessage(`Enviando imagem ${index + 1} de ${novasImagens.length}: ${file.name}...`);
             const formData = new FormData();
             formData.append('file', file);
 
             try {
                 const response = await fetch(`${API_BASE_URL}/uploadImagem/${imovelId}`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${token}` },
                     body: formData,
                 });
 
                 if (!response.ok) {
-                    setMessage((prev) => prev + ` ⚠️ Falha na imagem ${index + 1}.`);
+                    setMessage(prev => prev + ` ⚠️ Falha na imagem ${index + 1}`);
                     sucesso = false;
-
-                    if (response.status === 403 || response.status === 401) {
-                        logout();
-                        alert("Sua sessão expirou durante o upload. Faça login novamente.");
-                        navigate('/login');
-                        break;
-                    }
                 }
-            } catch (error) {
-                console.error("Erro na requisição de upload:", error);
-                setMessage((prev) => prev + ` ⚠️ Erro de rede na imagem ${index + 1}.`);
+            } catch (err) {
+                console.error(err);
+                setMessage(prev => prev + ` ⚠️ Erro de rede na imagem ${index + 1}`);
                 sucesso = false;
             }
         }
@@ -92,26 +127,22 @@ const AdicionarImovel = () => {
         return sucesso;
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
         setSubmitting(true);
         setMessage('');
 
         const token = getAccessToken();
         if (!token) {
-            setMessage("Sessão expirada. Por favor, faça login.");
             logout();
             navigate('/login');
-            setSubmitting(false);
             return;
         }
 
-        let novoImovelId = null;
-
         try {
-            setMessage("Cadastrando dados básicos do imóvel...");
-            const response = await fetch(`${API_BASE_URL}/cadastrar`, {
-                method: 'POST',
+            setMessage('Atualizando dados do imóvel...');
+            const response = await fetch(`${API_BASE_URL}/atualizar/${id}`, {
+                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -119,41 +150,19 @@ const AdicionarImovel = () => {
                 body: JSON.stringify(imovelData),
             });
 
-            if (!response.ok) {
-                let errorDetail = { message: "Erro desconhecido ao cadastrar." };
+            if (!response.ok) throw new Error(`Erro ${response.status} ao atualizar.`);
 
-                if (response.status === 403 || response.status === 401) {
-                    logout();
-                    navigate('/login');
-                    errorDetail.message = `Erro ${response.status}: Acesso Negado. Sua sessão expirou ou suas permissões não são suficientes.`;
-                } else {
-                    try {
-                        errorDetail = await response.json();
-                    } catch (e) {
-                        errorDetail.message = `Erro ${response.status}: Resposta vazia ou não JSON.`;
-                    }
-                }
+            const updated = await response.json();
+            setMessage('✅ Dados atualizados! Iniciando upload de novas imagens...');
 
-                throw new Error(errorDetail.message);
-            }
-
-            const novoImovel = await response.json();
-            novoImovelId = novoImovel.id;
-            setMessage(`✅ Imóvel cadastrado! Iniciando upload das ${imagensFiles.length} imagens...`);
-
-            const uploadOk = await uploadMultiplasImagens(novoImovelId, token);
-
-            if (uploadOk) {
-                setMessage(`🎉 Imóvel ${novoImovelId} criado e todas as imagens enviadas com sucesso!`);
-            } else {
-                setMessage(`⚠️ Imóvel criado, mas houve falhas no upload de algumas imagens.`);
-            }
+            const uploadOk = await uploadNovasImagens(updated.id, token);
+            if (uploadOk) setMessage('🎉 Imóvel atualizado e todas as imagens enviadas!');
+            else setMessage('⚠️ Imóvel atualizado, mas algumas imagens falharam.');
 
             setTimeout(() => navigate('/gerenciarCasas'), 3000);
-
-        } catch (error) {
-            console.error("Erro na submissão:", error);
-            setMessage("❌ Erro: " + (error.message || "Ocorreu um erro desconhecido."));
+        } catch (err) {
+            console.error(err);
+            setMessage('❌ Erro ao atualizar imóvel.');
         } finally {
             setSubmitting(false);
         }
@@ -161,7 +170,7 @@ const AdicionarImovel = () => {
 
     return (
         <div className="CriarCasaPage">
-            <h1 className="main-title">Criar Novo Imóvel</h1>
+            <h1 className="main-title">Editar Imóvel</h1>
             <form onSubmit={handleSubmit}>
                 <div className="grid-layout">
                     <div className="coluna-esquerda">
@@ -175,42 +184,41 @@ const AdicionarImovel = () => {
                                 multiple
                             />
                             <label htmlFor="file-upload" className="upload-label">
-                                {imagensFiles.length === 0 ? (
-                                    <>
-                                        <img className="IconeUpload" src="icons8-image-100 1.png" alt="Adicionar Imagem" />
-                                        <div className="UploadText">Adicionar imagens (Mínimo 1, Máximo 8)</div>
-                                    </>
-                                ) : (
-                                    <div className="preview-container">
-                                        <div className="preview-text">
-                                            {imagensFiles.length} {imagensFiles.length > 1 ? 'imagens selecionadas' : 'imagem selecionada'}
-                                        </div>
-                                        <div className="thumbnails-grid">
-                                            {imagensFiles.slice(0, 4).map((file, index) => (
-                                                <img
-                                                    key={index}
-                                                    src={URL.createObjectURL(file)}
-                                                    alt={`Preview ${index + 1}`}
-                                                    className="thumbnail"
-                                                />
+                                {novasImagens.length === 0 ? (
+                                    imagensExistentes.length === 0 ? (
+                                        <>
+                                            <img className="IconeUpload" src="icons8-image-100 1.png" alt="Adicionar Imagem" />
+                                            <div className="UploadText">Nenhuma imagem carregada</div>
+                                        </>
+                                    ) : (
+                                        <div className="preview-container">
+                                            {imagensExistentes.slice(0, 8).map((foto, i) => (
+                                                <img key={i} src={foto} alt={`Imagem ${i + 1}`} className="thumbnail" />
                                             ))}
-                                            {imagensFiles.length > 4 && (
+                                            {imagensExistentes.length > 8 && (
                                                 <div className="thumbnail thumbnail-overlay">
-                                                    +{imagensFiles.length - 4}
+                                                    +{imagensExistentes.length - 8}
                                                 </div>
                                             )}
                                         </div>
+                                    )
+                                ) : (
+                                    <div className="preview-container">
+                                        {novasImagens.slice(0, 8).map((file, i) => (
+                                            <img key={i} src={URL.createObjectURL(file)} alt={`Nova ${i + 1}`} className="thumbnail" />
+                                        ))}
+                                        {novasImagens.length > 8 && (
+                                            <div className="thumbnail thumbnail-overlay">
+                                                +{novasImagens.length - 8}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </label>
                         </div>
 
                         <div className="comodidades-left-col">
-                            <button
-                                type="button"
-                                className="btn-comodidades-large"
-                                onClick={handleOpenModal}
-                            >
+                            <button type="button" className="btn-comodidades-large" onClick={handleOpenModal}>
                                 Comodidades ({imovelData.comodidades.length})
                             </button>
                             {imovelData.comodidades.length > 0 && (
@@ -222,7 +230,6 @@ const AdicionarImovel = () => {
                     </div>
 
                     <div className="coluna-direita">
-                        {/* TODOS OS CAMPOS DA COLUNA DIREITA MANTIDOS */}
                         <label className="field-label" htmlFor="nome">Nome</label>
                         <div className="input-field full-width">
                             <input type="text" name="nome" value={imovelData.nome} onChange={handleChange} placeholder="Título do anúncio" required />
@@ -230,11 +237,12 @@ const AdicionarImovel = () => {
 
                         <div className="row-fields">
                             <div className="field-group">
-                                <label className="field-label" htmlFor="precoPorNoite">Preço da Noite (R$)</label>
+                                <label className="field-label" htmlFor="precoPorNoite">Preço da Noite</label>
                                 <div className="input-field half-width">
                                     <input type="text" name="precoPorNoite" value={imovelData.precoPorNoite} onChange={handleChange} placeholder="0.00" required />
                                 </div>
                             </div>
+
                             <div className="field-group">
                                 <label className="field-label" htmlFor="localizacao">Localização</label>
                                 <div className="input-field large-width">
@@ -250,6 +258,7 @@ const AdicionarImovel = () => {
                                     <input type="number" name="capacidadeHospedes" value={imovelData.capacidadeHospedes} onChange={handleChange} placeholder="Máximo" min="1" required />
                                 </div>
                             </div>
+
                             <div className="field-group">
                                 <label className="field-label" htmlFor="quartos">Quartos</label>
                                 <div className="input-field half-width">
@@ -265,6 +274,7 @@ const AdicionarImovel = () => {
                                     <input type="number" name="cozinha" value={imovelData.cozinha} onChange={handleChange} placeholder="Nº de Cozinhas" min="0" required />
                                 </div>
                             </div>
+
                             <div className="field-group">
                                 <label className="field-label" htmlFor="salaDeEstar">Salas de estar</label>
                                 <div className="input-field half-width">
@@ -296,7 +306,7 @@ const AdicionarImovel = () => {
                 )}
 
                 <button type="submit" className="btn-criar-imovel" disabled={submitting}>
-                    {submitting ? 'Processando...' : 'Criar Imóvel'}
+                    {submitting ? 'Processando...' : 'Salvar Alterações'}
                 </button>
             </form>
 
@@ -310,4 +320,4 @@ const AdicionarImovel = () => {
     );
 };
 
-export default AdicionarImovel;
+export default EditarImovel;

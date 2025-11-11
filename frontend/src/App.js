@@ -8,9 +8,10 @@ import UserProfile from './components/UserProfile/UserProfile';
 import AdminPanel from './components/AdminPanel/AdminPanel';
 import GerenciarCredencial from './components/GerenciarCredencial/GerenciarCredencial';
 import ProtectedRoute from './components/ProtectedRoute';
-import GerenciarGaleria from './components/GerenciarGaleria/GerenciarGaleria'
-import GerenciarCasas from './components/GerenciarCasas/GerenciarCasas'
-import AdicionarImovel from './components/GerenciarCasas/AdicionarImovel'
+import GerenciarGaleria from './components/GerenciarGaleria/GerenciarGaleria';
+import GerenciarCasas from './components/GerenciarCasas/GerenciarCasas';
+import AdicionarImovel from './components/GerenciarCasas/AdicionarImovel';
+import EditarImovel from './components/GerenciarCasas/EditarImovel';
 import './App.css';
 
 function App() {
@@ -68,6 +69,15 @@ function App() {
                              </ProtectedRoute>
                            }
                          />
+
+            <Route
+                path="/editarImovel/:id"
+                element={
+                    <ProtectedRoute>
+                        <EditarImovel />
+                    </ProtectedRoute>
+                }
+            />
 
 
         </Routes>

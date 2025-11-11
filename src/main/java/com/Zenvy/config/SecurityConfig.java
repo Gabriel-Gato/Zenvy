@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/usuarios/login",
                                 "/usuarios/refresh",
                                 "/uploads/**",
-                                "/galeria"
+                                "/galeria",
+                                "/imoveis/publicos"
                         ).permitAll()
                         .requestMatchers(
                                 "/imoveis/cadastrar",
@@ -48,11 +49,11 @@ public class SecurityConfig {
                                 "/imoveis/uploadImagem/**"
                         ).hasAuthority("ROLE_ANFITRIAO")
                         
-                        // ⭐️ ADICIONE ISTO: Permite acesso de usuários autenticados
+
                         .requestMatchers(
                                 "/usuarios/me",
-                                "/imoveis/{id}", // Ver detalhes de um imóvel
-                                "/reservas/**"  // Hóspedes podem fazer reservas
+                                "/imoveis/{id}",
+                                "/reservas/**"
                         ).authenticated()
                         
                         .anyRequest().authenticated()

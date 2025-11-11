@@ -21,20 +21,36 @@ const FiltrosModal = ({ isOpen, onClose, onApplyFilters, filtrosIniciais }) => {
 
   const modalRef = useRef();
 
-  const comodidadesOptions = [
-    'WIFI',
-    'AR_CONDICIONADO',
-    'PISCINA',
-    'ESTACIONAMENTO',
-    'TV',
-    'COZINHA_EQUIPADA',
-    'LAREIRA',
-    'ACESSIBILIDADE',
-    'PET_FRIENDLY',
-    'VARANDA'
-  ];
+    const comodidadesOptions = [
+        'WIFI',
+        'AR_CONDICIONADO',
+        'AQUECIMENTO',
+        'TV',
+        'VENTILADOR',
+        'ROUPAS_DE_CAMA',
+        'TOALHAS',
+        'FERRO_DE_PASSAR',
+        'MAQUINA_DE_LAVAR',
+        'COZINHA_COMPLETA',
+        'GELADEIRA',
+        'FOGAO',
+        'MICROONDAS',
+        'CAFETEIRA',
+        'PISCINA',
+        'ESTACIONAMENTO',
+        'GARAGEM_COBERTA',
+        'VARANDA',
+        'QUINTAL_JARDIM',
+        'CHURRASQUEIRA',
+        'PET_FRIENDLY',
+        'BERCO',
+        'CADEIRA_BEBE',
+        'ELEVADOR',
+        'BANHEIRO_ACESSIVEL'
+    ];
 
-  // Fechar modal ao pressionar ESC
+
+    // Fechar modal ao pressionar ESC
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.keyCode === 27 && isOpen) {

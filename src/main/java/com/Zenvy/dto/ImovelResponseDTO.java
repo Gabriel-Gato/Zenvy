@@ -1,5 +1,6 @@
 package com.Zenvy.dto;
 
+import com.Zenvy.models.enums.Comodidade;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

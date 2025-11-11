@@ -1,9 +1,9 @@
 package com.Zenvy.services;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,13 +27,12 @@ public class JwtService {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-
-
+    // ----------------------- KEY -----------------------
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-
+    // ----------------------- CLAIMS -----------------------
     private Map<String, Object> createClaims(UserDetails userDetails) {
         String authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -41,9 +40,9 @@ public class JwtService {
         return Map.of("authorities", authorities);
     }
 
-
-    public String generateToken(Map<String, Object> extraClaims, String subject, boolean refreshToken) {
-        long expiration = refreshToken ? refreshTokenExpiration : accessTokenExpiration;
+    // ----------------------- GENERATE TOKEN -----------------------
+    private String generateToken(Map<String, Object> extraClaims, String subject, boolean isRefreshToken) {
+        long expiration = isRefreshToken ? refreshTokenExpiration : accessTokenExpiration;
 
         return Jwts.builder()
                 .setClaims(extraClaims)
@@ -54,24 +53,29 @@ public class JwtService {
                 .compact();
     }
 
-
+    // ----------------------- ACCESS TOKEN -----------------------
     public String generateAccessToken(UserDetails userDetails) {
-        Map<String, Object> claims = createClaims(userDetails);
-        return generateToken(claims, userDetails.getUsername(), false);
+        return generateToken(createClaims(userDetails), userDetails.getUsername(), false);
     }
 
-
+    // ----------------------- REFRESH TOKEN -----------------------
     public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(createClaims(userDetails), userDetails.getUsername(), true);
+        // Refresh token não precisa de claims extras
+        return generateToken(Map.of(), userDetails.getUsername(), true);
     }
 
-
-
+    // ----------------------- VALIDATION -----------------------
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    // ----------------------- EXTRACT CLAIMS -----------------------
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -95,5 +99,13 @@ public class JwtService {
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    // ----------------------- REFRESH ACCESS TOKEN -----------------------
+    public String refreshAccessToken(String refreshToken, UserDetails userDetails) {
+        if (isRefreshTokenValid(refreshToken, userDetails)) {
+            return generateAccessToken(userDetails);
+        }
+        throw new RuntimeException("Refresh token inválido ou expirado");
     }
 }

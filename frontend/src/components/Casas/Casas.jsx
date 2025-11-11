@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import FiltrosModal from './FiltrosModal';
 import NavBar from '../NavBar/NavBar';
 import './Casas.css';
 
 const Casas = () => {
-    // LÓGICA DA NAV BAR (Copiada da LandingPage)
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const [searchData, setSearchData] = useState({
+        local: '',
+        checkIn: '',
+        checkOut: '',
+        hospedes: ''
+    });
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+    const [filtrosAtivos, setFiltrosAtivos] = useState({ comodidades: [] });
+    const [casas, setCasas] = useState([]);
 
+    // Carregar usuário logado
     const carregarUsuario = () => {
         const token = localStorage.getItem('accessToken');
-        if (!token) {
-            setUser(null);
-            return;
-        }
+        if (!token) return setUser(null);
 
         fetch('http://localhost:8080/usuarios/me', {
             headers: { Authorization: `Bearer ${token}` },
@@ -42,6 +48,7 @@ const Casas = () => {
 
     useEffect(() => {
         carregarUsuario();
+        handleSearch(); // Carrega casas ao abrir a página
     }, []);
 
     const handleLogout = () => {
@@ -51,81 +58,62 @@ const Casas = () => {
         window.location.reload();
     };
 
-    // LÓGICA DE BUSCA E FILTRO
-    const [searchData, setSearchData] = useState({
-        local: '',
-        checkIn: '',
-        checkOut: '',
-        hospedes: ''
-    });
+    // Buscar casas na API
+    const handleSearch = async (e) => {
+        if (e) e.preventDefault();
 
-    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-    const [filtrosAtivos, setFiltrosAtivos] = useState({
-        comodidades: []
-    });
+        try {
+            const query = new URLSearchParams();
 
-    const casas = [
-        {
-            id: 1,
-            imagem: "https://placehold.co/288x288",
-            titulo: "Casa de luxo",
-            preco: "R$500 por 2 noites",
-            localizacao: "São Paulo",
-            avaliacao: "4,98",
-            estrelas: 5
-        },
-        {
-            id: 2,
-            imagem: "https://placehold.co/288x288",
-            titulo: "Casa básica",
-            preco: "R$200 por 2 noites",
-            localizacao: "Rio de Janeiro",
-            avaliacao: "4,56",
-            estrelas: 4
-        },
-        {
-            id: 3,
-            imagem: "https://placehold.co/288x288",
-            titulo: "Casa de luxo",
-            preco: "R$500 por 2 noites",
-            localizacao: "São Paulo",
-            avaliacao: "4,98",
-            estrelas: 5
-        },
-        {
-            id: 4,
-            imagem: "https://placehold.co/288x288",
-            titulo: "Casa de luxo",
-            preco: "R$500 por 2 noites",
-            localizacao: "São Paulo",
-            avaliacao: "4,98",
-            estrelas: 5
+            // Filtros ativos
+            if (filtrosAtivos.precoMin) query.append('precoMin', filtrosAtivos.precoMin);
+            if (filtrosAtivos.precoMax) query.append('precoMax', filtrosAtivos.precoMax);
+            if (filtrosAtivos.capacidadeMin) query.append('capacidadeMin', filtrosAtivos.capacidadeMin);
+            if (filtrosAtivos.capacidadeMax) query.append('capacidadeMax', filtrosAtivos.capacidadeMax);
+            if (filtrosAtivos.quartosMin) query.append('quartosMin', filtrosAtivos.quartosMin);
+            if (filtrosAtivos.quartosMax) query.append('quartosMax', filtrosAtivos.quartosMax);
+            if (filtrosAtivos.localizacao) query.append('localizacao', filtrosAtivos.localizacao);
+            if (filtrosAtivos.comodidades?.length > 0)
+                filtrosAtivos.comodidades.forEach(c => query.append('comodidades', c));
+
+            // Dados da busca
+            if (searchData.checkIn) query.append('checkIn', searchData.checkIn);
+            if (searchData.checkOut) query.append('checkOut', searchData.checkOut);
+            if (searchData.hospedes) query.append('hospedes', searchData.hospedes);
+            if (searchData.local) query.append('local', searchData.local);
+
+            const res = await fetch(`http://localhost:8080/imoveis/publicos?${query.toString()}`);
+
+            if (!res.ok) throw new Error('Erro ao buscar casas');
+
+            const data = await res.json();
+
+            const formattedData = data.map(casa => ({
+                id: casa.id,
+                imagem: casa.fotos?.[0] || 'https://placehold.co/288x288',
+                nome: casa.titulo || casa.nome || 'Imóvel sem título', // usa o campo correto
+                precoPorNoite: casa.valorDiaria || casa.precoPorNoite || 0, // usa o campo correto
+                localizacao: casa.localizacao,
+                avaliacaoMedia: casa.avaliacaoMedia || 0,
+            }));
+
+
+            setCasas(formattedData);
+        } catch (error) {
+            console.error(error);
+            setCasas([]);
         }
-    ];
+    };
 
     const handleSearchChange = (e) => {
-        setSearchData({
-            ...searchData,
-            [e.target.name]: e.target.value
-        });
+        setSearchData({ ...searchData, [e.target.name]: e.target.value });
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        console.log('Dados da busca:', searchData);
-    };
-
-    const handleOpenFilters = () => {
-        setIsFiltersOpen(true);
-    };
-
-    const handleCloseFilters = () => {
-        setIsFiltersOpen(false);
-    };
-
+    const handleOpenFilters = () => setIsFiltersOpen(true);
+    const handleCloseFilters = () => setIsFiltersOpen(false);
     const handleApplyFilters = (filtros) => {
         setFiltrosAtivos(filtros);
-        console.log('Filtros aplicados:', filtros);
+        handleSearch(); // Atualiza casas ao aplicar filtros
     };
 
     const hasActiveFilters = () => {
@@ -151,10 +139,8 @@ const Casas = () => {
 
     return (
         <div className="casas-page">
-            {/* ✅ NavBar reutilizada */}
             <NavBar user={user} handleLogout={handleLogout} />
 
-            {/* Hero Search Section */}
             <section className="search-hero">
                 <div className="search-overlay"></div>
                 <div className="search-container">
@@ -172,7 +158,6 @@ const Casas = () => {
                                             className="search-input"
                                             placeholder="Buscar lugar"
                                         />
-                                        <div className="input-line"></div>
                                     </div>
                                 </div>
 
@@ -188,7 +173,6 @@ const Casas = () => {
                                             onChange={handleSearchChange}
                                             className="search-input"
                                         />
-                                        <div className="input-line"></div>
                                     </div>
                                 </div>
 
@@ -204,7 +188,6 @@ const Casas = () => {
                                             onChange={handleSearchChange}
                                             className="search-input"
                                         />
-                                        <div className="input-line"></div>
                                     </div>
                                 </div>
 
@@ -222,15 +205,11 @@ const Casas = () => {
                                             placeholder="Quantidade"
                                             min="1"
                                         />
-                                        <div className="input-line"></div>
                                     </div>
                                 </div>
 
-                                <button
-                                    type="button"
-                                    className="filter-btn"
-                                    onClick={handleOpenFilters}
-                                >
+                                <button type="button" className="filter-btn" onClick={handleOpenFilters}>
+                                    {/* Ícone de filtro */}
                                     <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M14 24H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                         <path d="M10 17H24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -239,6 +218,7 @@ const Casas = () => {
                                 </button>
 
                                 <button type="submit" className="search-btn">
+                                    {/* Ícone de busca */}
                                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M21 21L27 27" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                         <path d="M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="white" strokeWidth="2"/>
@@ -255,32 +235,13 @@ const Casas = () => {
                     <div className="container">
                         <div className="filtros-tags">
                             <span className="filtros-label">Filtros aplicados:</span>
-                            {filtrosAtivos.precoMin > 0 && (
-                                <span className="filtro-tag">Preço min: R$ {filtrosAtivos.precoMin}</span>
-                            )}
-                            {filtrosAtivos.precoMax < 1000 && (
-                                <span className="filtro-tag">Preço max: R$ {filtrosAtivos.precoMax}</span>
-                            )}
-                            {filtrosAtivos.capacidadeMin > 1 && (
-                                <span className="filtro-tag">Capacidade: {filtrosAtivos.capacidadeMin}+</span>
-                            )}
-                            {filtrosAtivos.quartosMin > 1 && (
-                                <span className="filtro-tag">Quartos: {filtrosAtivos.quartosMin}+</span>
-                            )}
-                            {filtrosAtivos.localizacao && (
-                                <span className="filtro-tag">Local: {filtrosAtivos.localizacao}</span>
-                            )}
-                            {filtrosAtivos.comodidades?.length > 0 && (
-                                <span className="filtro-tag">
-                  Comodidades: {filtrosAtivos.comodidades.length}
-                </span>
-                            )}
-                            <button
-                                className="limpar-filtros"
-                                onClick={() => setFiltrosAtivos({ comodidades: [] })}
-                            >
-                                Limpar todos
-                            </button>
+                            {filtrosAtivos.precoMin > 0 && <span className="filtro-tag">Preço min: R$ {filtrosAtivos.precoMin}</span>}
+                            {filtrosAtivos.precoMax < 1000 && <span className="filtro-tag">Preço max: R$ {filtrosAtivos.precoMax}</span>}
+                            {filtrosAtivos.capacidadeMin > 1 && <span className="filtro-tag">Capacidade: {filtrosAtivos.capacidadeMin}+</span>}
+                            {filtrosAtivos.quartosMin > 1 && <span className="filtro-tag">Quartos: {filtrosAtivos.quartosMin}+</span>}
+                            {filtrosAtivos.localizacao && <span className="filtro-tag">Local: {filtrosAtivos.localizacao}</span>}
+                            {filtrosAtivos.comodidades?.length > 0 && <span className="filtro-tag">Comodidades: {filtrosAtivos.comodidades.length}</span>}
+                            <button className="limpar-filtros" onClick={() => { setFiltrosAtivos({ comodidades: [] }); handleSearch(); }}>Limpar todos</button>
                         </div>
                     </div>
                 </div>
@@ -300,8 +261,8 @@ const Casas = () => {
                             <div key={casa.id} className="casa-card">
                                 <img src={casa.imagem} alt={casa.titulo} className="casa-image" />
                                 <div className="casa-info">
-                                    <h3 className="casa-title">{casa.titulo}</h3>
-                                    <div className="casa-price">{casa.preco}</div>
+                                    <h3 className="casa-title">{casa.nome}</h3>
+                                    <div className="casa-price">R${casa.precoPorNoite} por noite</div>
                                     <div className="casa-details">
                                         <div className="casa-rating">
                                             <div className="stars">

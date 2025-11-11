@@ -81,6 +81,12 @@ public class ImovelController {
         return ResponseEntity.ok(imovelService.listarTodos());
     }
 
+    @GetMapping("/publicos")
+    public ResponseEntity<List<ImovelResponseDTO>> listarPublicos(){
+        return ResponseEntity.ok(imovelService.listarTodos());
+    }
+
+
     // ---------------------------------------------------
     // Atualizar imóvel
     // ---------------------------------------------------
