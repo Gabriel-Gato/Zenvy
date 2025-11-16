@@ -27,12 +27,11 @@ public class ImovelSpecification {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("quartos"), filtro.quartosMinimos()));
             }
 
-            if (filtro.comodidade() != null) {
-                // Filtra imóveis que contenham a comodidade
+            if (filtro.comodidades() != null && !filtro.comodidades().isEmpty()) {
                 var join = root.join("comodidades");
-                predicates.add(cb.equal(join, filtro.comodidade()));
+                predicates.add(join.in(filtro.comodidades()));
             }
-
+            
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public record FiltroImovelRequest(
         @Size(max = 255, message = "A localização deve ter no máximo 255 caracteres")
         String localizacao,
@@ -22,6 +24,6 @@ public record FiltroImovelRequest(
         @Min(value = 1, message = "O número de quartos mínimos deve ser pelo menos 1")
         Integer quartosMinimos,
 
-        Comodidade comodidade
+        List<Comodidade> comodidades
 ) {
 }

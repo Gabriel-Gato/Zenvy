@@ -1,379 +1,290 @@
 /* Reset e Base */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .cadastro-page {
-  font-family: 'Roboto', 'Inter', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  background: white;
+    font-family: 'Roboto', 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: white;
 }
 
 /* Background */
 .cadastro-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-              url('/public/6566811 1.png') center/cover;
-  filter: blur(5.9px);
-  z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/public/6566811 1.png') center/cover;
+    filter: blur(5.9px);
+    z-index: 1;
 }
 
 .background-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0.42;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.42;
 }
 
 /* Container Principal */
 .cadastro-container {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 1200px;
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Card do Cadastro */
 .cadastro-card {
-  background: #FAFAFA;
-  border-radius: 30px;
-  padding: 3rem 4rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 1050px;
-  text-align: center;
+    background: #FAFAFA;
+    border-radius: 30px;
+    padding: 3rem 4rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1050px;
+    text-align: center;
+    animation: fadeInUp 0.6s ease-out;
 }
 
 /* Título */
 .cadastro-title {
-  color: black;
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-family: 'League Spartan', sans-serif;
-  font-weight: 400;
-  line-height: 1.2;
-  margin-bottom: 3rem;
+    color: black;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 3rem;
 }
 
 /* Formulário */
 .cadastro-form {
-  width: 100%;
-  margin: 0 auto;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 2rem;
 }
 
 .form-column {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 .form-group {
-  text-align: left;
+    position: relative;
+    text-align: left;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
 .form-label {
-  display: block;
-  color: black;
-  font-size: 1.5rem;
-  font-family: 'Kdam Thmor', sans-serif;
-  font-weight: 400;
-  line-height: 1.4;
-  margin-bottom: 1rem;
-  text-align: center;
+    display: block;
+    color: black;
+    font-size: 1.5rem;
+    font-family: 'Kdam Thmor', sans-serif;
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
 .input-container {
-  display: flex;
-  align-items: center;
-  background: transparent;
-  border: none;
-  width: 100%;
-  position: relative;
-}
-
-.input-icon {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  color: black;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    width: 100%;
+    position: relative;
 }
 
 .form-input {
-  width: 100%;
-  padding: 1rem 0 1rem 3.5rem; /* era 2.5rem — aumentei o espaçamento lateral */
-  border: none;
-  background: transparent;
-  font-size: 1.1rem;
-  font-family: 'Kdam Thmor', sans-serif;
-  color: black;
-  outline: none;
+    width: 100%;
+    padding: 1rem 0 1rem 1rem;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    font-family: 'Kdam Thmor', sans-serif;
+    color: black;
+    outline: none;
 }
 
 .form-input::placeholder {
-  color: rgba(0, 0, 0, 0.6);
+    color: rgba(0, 0, 0, 0.6);
 }
 
+/* LINHA MAIS PARA A ESQUERDA — OPÇÃO 2 */
 .input-line {
-  width: 100%;
-  height: 1px;
-  background: black;
-  margin-top: 0.5rem;
+    width: 100% !important;   /* ajuste aqui */
+    height: 1px !important;
+    background: black !important;
+}
+
+/* Botão mostrar senha */
+.toggle-senha-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
 }
 
 /* Termos e Checkboxes */
 .terms-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin: 2rem 0;
-}
-
-.term-group {
-  display: flex;
-  justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+    animation: fadeInUp 0.6s ease-out 0.4s both;
 }
 
 .checkbox-label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 0.5rem;
 }
 
 .checkbox-input {
-  display: none;
+    display: none;
 }
 
 .checkmark {
-  width: 32px;
-  height: 32px;
-  border: 1px solid black;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    border: 1px solid black;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .checkbox-input:checked + .checkmark {
-  background: #00AAFF;
-  border-color: #00AAFF;
+    background: #00AAFF;
+    border-color: #00AAFF;
 }
 
 .checkbox-input:checked + .checkmark::after {
-  content: '✓';
-  color: white;
-  font-weight: bold;
+    content: '✓';
+    color: white;
+    font-weight: bold;
 }
 
 .term-text {
-  color: black;
-  font-size: 1rem;
-  font-family: 'Kdam Thmor', sans-serif;
-  font-weight: 400;
-}
-
-.term-highlight {
-  color: #00AAFF;
+    color: black;
+    font-size: 1rem;
+    font-family: 'Kdam Thmor', sans-serif;
 }
 
 /* Botão Criar */
 .cadastro-button {
-  width: 261px;
-  height: 87px;
-  background: #00AAFF;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  font-size: 2.5rem;
-  font-family: 'League Spartan', sans-serif;
-  font-weight: 700;
-  line-height: 1.2;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 2rem 0;
+    width: 261px;
+    height: 87px;
+    background: #00AAFF;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 2.5rem;
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 2rem 0;
+    animation: fadeInUp 0.6s ease-out 0.6s both;
 }
 
 .cadastro-button:hover {
-  background: #0099e6;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 170, 255, 0.3);
-}
-
-.cadastro-button:active {
-  transform: translateY(0);
+    background: #0099e6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 170, 255, 0.3);
 }
 
 /* Links */
-.login-link {
-  margin-top: 1rem;
-}
-
-.login-link p {
-  color: black;
-  font-size: 1rem;
-  font-family: 'Kdam Thmor', sans-serif;
-  font-weight: 400;
-  line-height: 1.5;
-}
-
-.login-text {
-  color: #00AAFF;
-  text-decoration: none;
-  font-weight: 400;
-  transition: color 0.3s ease;
-}
-
-.login-text:hover {
-  color: #0099e6;
-  text-decoration: underline;
-}
-
-.back-link {
-  margin-top: 1rem;
-}
-
+.login-text,
 .back-text {
-  color: #00AAFF;
-  text-decoration: none;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem;
-  transition: color 0.3s ease;
+    color: #00AAFF;
+    text-decoration: none;
 }
 
+.login-text:hover,
 .back-text:hover {
-  color: #0099e6;
-  text-decoration: underline;
+    color: #0099e6;
+    text-decoration: underline;
 }
 
-/* Responsividade */
+/* VALIDATION */
+.input-error .input-line {
+    background: red !important;
+}
+
+.error-message {
+    position: absolute;
+    bottom: -29px;
+    left: 0;
+    font-size: 0.7rem;
+    color: red;
+    pointer-events: none;
+}
+
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
-  .cadastro-container {
-    padding: 1rem;
-  }
+    .cadastro-card {
+        padding: 2rem;
+    }
 
-  .cadastro-card {
-    padding: 2rem 1.5rem;
-    border-radius: 20px;
-  }
+    .form-row {
+        grid-template-columns: 1fr;
+    }
 
-  .cadastro-title {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .terms-row {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .cadastro-button {
-    width: 220px;
-    height: 70px;
-    font-size: 2rem;
-  }
-
-  .form-label {
-    font-size: 1.25rem;
-  }
+    .terms-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 480px) {
-  .cadastro-card {
-    padding: 1.5rem 1rem;
-  }
+    .cadastro-card {
+        padding: 1.5rem;
+    }
 
-  .cadastro-title {
-    font-size: 2rem;
-  }
+    .cadastro-button {
+        width: 180px;
+        height: 60px;
+        font-size: 1.7rem;
+    }
 
-  .cadastro-button {
-    width: 180px;
-    height: 60px;
-    font-size: 1.5rem;
-  }
-
-  .form-label {
-    font-size: 1.1rem;
-  }
-
-  .term-text {
-    font-size: 0.9rem;
-  }
+    .input-line {
+        margin-left: 0.5rem;
+        width: calc(100% - 0.5rem);
+    }
 }
 
-/* Animações */
+/* Animation */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.cadastro-card {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.form-group {
-  animation: fadeInUp 0.6s ease-out 0.2s both;
-}
-
-.terms-row {
-  animation: fadeInUp 0.6s ease-out 0.4s both;
-}
-
-.cadastro-button {
-  animation: fadeInUp 0.6s ease-out 0.6s both;
-}
-
-.toggle-senha-btn {
-  position: absolute;
-  right: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #666;
-}
-
-.toggle-password:hover {
-  color: #000;
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

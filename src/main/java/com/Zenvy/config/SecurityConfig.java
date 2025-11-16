@@ -39,7 +39,8 @@ public class SecurityConfig {
                                 "/usuarios/refresh",
                                 "/uploads/**",
                                 "/galeria",
-                                "/imoveis/publicos"
+                                "/imoveis/publicos",
+                                "/imoveis/filtro"
                         ).permitAll()
                         .requestMatchers(
                                 "/imoveis/cadastrar",
