@@ -280,3 +280,151 @@
     color: #242424;
     text-align: center;
 }
+
+.modal-overlay {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content:center;
+    align-items:center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease-out;
+    font-family: 'Inter', sans-serif;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+}
+
+/* Overlay do modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Card do modal */
+.modal-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Título */
+.modal-card h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+/* Botões de método de pagamento */
+.payment-methods {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.payment-methods button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #f7f7f7;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.payment-methods button.active {
+    background: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+/* Inputs de cartão */
+.card-inputs input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.card-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.card-row input {
+    flex: 1;
+}
+
+/* Botões do modal */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-buttons button:first-child {
+    background: #f44336;
+    color: white;
+}
+
+.modal-buttons button:first-child:hover {
+    background: #d32f2f;
+}
+
+.modal-buttons button:last-child {
+    background: #4CAF50;
+    color: white;
+}
+
+.modal-buttons button:last-child:hover {
+    background: #45a049;
+}
+
+/* Animação */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

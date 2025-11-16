@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './UserProfile.css';
 
 const UserProfile = () => {
+    const navigate = useNavigate();
   const [userData, setUserData] = useState({
     nome: '',
     telefone: '',
@@ -139,7 +141,7 @@ const UserProfile = () => {
   };
 
   const handleStatusEstadia = () => {
-    alert('Abrindo informações do status da estadia...');
+      navigate('/statusEstadia');
   };
 
   if (loading) return <div className="user-profile">Carregando...</div>;

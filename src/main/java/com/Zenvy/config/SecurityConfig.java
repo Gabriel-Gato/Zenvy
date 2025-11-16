@@ -33,6 +33,7 @@ public class SecurityConfig {
 
 
                 .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos
                         .requestMatchers(
                                 "/usuarios/cadastrar",
                                 "/usuarios/login",
@@ -40,25 +41,29 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/galeria",
                                 "/imoveis/publicos",
-                                "/imoveis/filtro"
+                                "/imoveis/filtro",
+                                "/imoveis/{id}",
+                                "/imoveis/uploadImagem/**",
+                                "/imoveis/listar",
+                                "/reservas/**"
                         ).permitAll()
+
+                        // Endpoints do anfitrião
                         .requestMatchers(
                                 "/imoveis/cadastrar",
-                                "/imoveis/listar",
                                 "/imoveis/deletar/**",
-                                "/imoveis/atualizar/**",
-                                "/imoveis/uploadImagem/**"
+                                "/imoveis/atualizar/**"
                         ).hasAuthority("ROLE_ANFITRIAO")
-                        
 
+                        // Endpoints que precisam de autenticação (hospede ou admin)
                         .requestMatchers(
-                                "/usuarios/me",
-                                "/imoveis/{id}",
-                                "/reservas/**"
+                                "/usuarios/me"
                         ).authenticated()
-                        
+
+                        // Qualquer outro
                         .anyRequest().authenticated()
                 )
+
 
 
                 .sessionManagement(session -> session

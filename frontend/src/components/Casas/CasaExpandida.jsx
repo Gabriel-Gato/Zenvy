@@ -6,6 +6,8 @@ import { getAccessToken, logout } from '../../services/AuthService/AuthService';
 import './CasaExpandida.css';
 
 const API_BASE_URL = 'http://localhost:8080/imoveis';
+const RESERVA_URL = 'http://localhost:8080/reservas/criar';
+const USUARIO_ME_URL = 'http://localhost:8080/usuarios/me';
 const BASE_IMAGE_URL = 'http://localhost:8080/uploads/imagemImoveis/';
 
 const CasaExpandida = () => {
@@ -26,11 +28,11 @@ const CasaExpandida = () => {
     });
 
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    // Datas de reserva
     const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000)); // Amanhã
+    const [endDate, setEndDate] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000));
     const [totalPrice, setTotalPrice] = useState(0);
+    const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('credit');
 
     // Buscar dados do imóvel
     useEffect(() => {
@@ -63,8 +65,8 @@ const CasaExpandida = () => {
                     descricao: data.descricao || '',
                     comodidades: data.comodidades || [],
                     fotos,
+                    id: data.id
                 });
-
             } catch (err) {
                 console.error(err);
             }
@@ -72,16 +74,72 @@ const CasaExpandida = () => {
         fetchImovel();
     }, [id, navigate]);
 
-    // Atualiza preço total quando datas ou preço mudam
+    // Atualiza preço total
     useEffect(() => {
-        const timeDiff = endDate.getTime() - startDate.getTime();
-        const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        const nights = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
         setTotalPrice(nights * imovelData.precoPorNoite);
     }, [startDate, endDate, imovelData.precoPorNoite]);
 
-    // Carrossel
     const nextImage = () => setCurrentIndex((prev) => (prev + 1) % imovelData.fotos.length);
     const prevImage = () => setCurrentIndex((prev) => (prev - 1 + imovelData.fotos.length) % imovelData.fotos.length);
+
+    // Busca ID do usuário logado
+    const fetchUsuarioLogado = async () => {
+        const token = getAccessToken();
+        if (!token) {
+            logout();
+            navigate('/login');
+            return null;
+        }
+        try {
+            const response = await fetch(USUARIO_ME_URL, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Erro ao obter usuário logado');
+            const usuario = await response.json();
+            return usuario.id;
+        } catch (err) {
+            console.error(err);
+            logout();
+            navigate('/login');
+            return null;
+        }
+    };
+
+    // Função de pagamento / reserva
+    const handlePayment = async () => {
+        const hospedeId = await fetchUsuarioLogado();
+        if (!hospedeId) return;
+
+        const reservaBody = {
+            dataCheckin: startDate.toISOString().split('T')[0],
+            dataCheckout: endDate.toISOString().split('T')[0],
+            valorTotal: totalPrice,
+        };
+
+        try {
+            const token = getAccessToken();
+            const response = await fetch(`${RESERVA_URL}/${imovelData.id}/${hospedeId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(reservaBody)
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`Erro ao criar reserva: ${response.status} ${text}`);
+            }
+
+            alert('Reserva realizada com sucesso!');
+            setPaymentModalOpen(false);
+        } catch (err) {
+            console.error(err);
+            alert('Erro ao realizar reserva: ' + err.message);
+        }
+    };
 
     return (
         <div className="casa-expandida-container">
@@ -121,15 +179,13 @@ const CasaExpandida = () => {
                         <div className="reserva-price">R${imovelData.precoPorNoite}</div>
                         <div className="reserva-duration">por noite</div>
 
-                        {/* Seleção de datas com validação */}
+                        {/* Datas */}
                         <div className="date-selection">
                             <label>Check-in</label>
                             <DatePicker
                                 selected={startDate}
                                 onChange={(date) => {
-                                    if (date >= endDate) {
-                                        setEndDate(new Date(date.getTime() + 24 * 60 * 60 * 1000));
-                                    }
+                                    if (date >= endDate) setEndDate(new Date(date.getTime() + 24 * 60 * 60 * 1000));
                                     setStartDate(date);
                                 }}
                                 selectsStart
@@ -142,11 +198,8 @@ const CasaExpandida = () => {
                             <DatePicker
                                 selected={endDate}
                                 onChange={(date) => {
-                                    if (date <= startDate) {
-                                        setEndDate(new Date(startDate.getTime() + 24 * 60 * 60 * 1000));
-                                    } else {
-                                        setEndDate(date);
-                                    }
+                                    if (date <= startDate) setEndDate(new Date(startDate.getTime() + 24 * 60 * 60 * 1000));
+                                    else setEndDate(date);
                                 }}
                                 selectsEnd
                                 startDate={startDate}
@@ -157,7 +210,7 @@ const CasaExpandida = () => {
                         </div>
 
                         <div className="total-price">Total: R${totalPrice}</div>
-                        <button className="reserva-button">Reservar</button>
+                        <button className="reserva-button" onClick={() => setPaymentModalOpen(true)}>Reservar</button>
 
                         <hr className="section-divider" />
 
@@ -174,6 +227,36 @@ const CasaExpandida = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de pagamento */}
+            {paymentModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-card">
+                        <h2>Pagamento</h2>
+                        <div className="payment-methods">
+                            <button className={paymentMethod === 'credit' ? 'active' : ''} onClick={() => setPaymentMethod('credit')}>Cartão de Crédito</button>
+                            <button className={paymentMethod === 'debit' ? 'active' : ''} onClick={() => setPaymentMethod('debit')}>Cartão de Débito</button>
+                            <button className={paymentMethod === 'paypal' ? 'active' : ''} onClick={() => setPaymentMethod('paypal')}>PayPal</button>
+                        </div>
+
+                        {paymentMethod !== 'paypal' && (
+                            <div className="card-inputs">
+                                <input type="text" placeholder="Número do cartão" />
+                                <input type="text" placeholder="Nome no cartão" />
+                                <div className="card-row">
+                                    <input type="text" placeholder="MM/AA" />
+                                    <input type="text" placeholder="CVC" />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="modal-buttons">
+                            <button onClick={() => setPaymentModalOpen(false)}>Cancelar</button>
+                            <button onClick={handlePayment}>Pagar R${totalPrice}</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

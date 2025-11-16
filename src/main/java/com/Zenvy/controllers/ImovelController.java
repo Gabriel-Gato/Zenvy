@@ -41,7 +41,6 @@ public class ImovelController {
     }
 
     @PostMapping("/uploadImagens/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Imovel> uploadImagens(
             @PathVariable Long id,
             @RequestParam("files") List<MultipartFile> files) throws IOException {
@@ -55,7 +54,6 @@ public class ImovelController {
     }
 
     @PostMapping("/uploadImagem/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Imovel> uploadImagem(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) throws IOException {
@@ -65,16 +63,15 @@ public class ImovelController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Imovel> buscarPorId(@PathVariable Long id) {
-        var imovel = imovelService.buscarPorId(id);
-        return ResponseEntity.ok(imovel);
+    public ResponseEntity<ImovelResponseDTO> getImovel(@PathVariable Long id) {
+        return ResponseEntity.ok(imovelService.buscarPorId(id));
     }
+
 
     // ---------------------------------------------------
     // Listar todos os imóveis (com DTOs)
     // ---------------------------------------------------
     @GetMapping("/listar")
-    @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<List<ImovelResponseDTO>> listarTodos() {
         return ResponseEntity.ok(imovelService.listarTodos());
     }

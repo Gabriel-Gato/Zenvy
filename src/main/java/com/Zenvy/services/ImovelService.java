@@ -106,9 +106,27 @@ public class ImovelService {
     }
 
 
-    public Imovel buscarPorId(Long id) {
-        return imovelRepository.findById(id)
+    public ImovelResponseDTO buscarPorId(Long id) {
+        String baseUrl = "http://localhost:8080/uploads/imagemImoveis/";
+
+        Imovel imovel = imovelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
+
+        // Garantir que a lista de imagens nunca seja nula
+        List<String> fotos = imovel.getImagens() != null
+                ? imovel.getImagens().stream()
+                .map(img -> baseUrl + img)
+                .toList()
+                : List.of();
+
+        return new ImovelResponseDTO(
+                imovel.getId(),
+                imovel.getNome(),
+                imovel.getLocalizacao(),
+                imovel.getPrecoPorNoite(),
+                fotos,
+                avaliacaoService.calcularMediaPorImovel(imovel.getId())
+        );
     }
 
     public List<ImovelResponseDTO> listarTodos() {

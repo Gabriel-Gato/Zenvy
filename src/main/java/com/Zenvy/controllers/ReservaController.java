@@ -1,12 +1,15 @@
 package com.Zenvy.controllers;
 
+import com.Zenvy.dto.ReservaDTO;
 import com.Zenvy.models.Reserva;
 import com.Zenvy.services.ReservaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reservas")
@@ -31,9 +34,16 @@ public class ReservaController {
     }
 
     @GetMapping("/listarPorHospede/{hospedeId}")
-    public ResponseEntity<List<Reserva>> listarPorHospede(@PathVariable Long hospedeId) {
-        return ResponseEntity.ok(reservaService.listarPorHospede(hospedeId));
+    public ResponseEntity<List<ReservaDTO>> listarPorHospede(@PathVariable Long hospedeId) {
+        List<Reserva> reservas = reservaService.listarPorHospede(hospedeId);
+        List<ReservaDTO> dto = reservas.stream()
+                .map(ReservaDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dto);
     }
+
+
+
 
     @GetMapping("/listarPorImovel/{imovelId}")
     public ResponseEntity<List<Reserva>> listarPorImovel(@PathVariable Long imovelId) {
