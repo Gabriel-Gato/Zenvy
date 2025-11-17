@@ -1,8 +1,13 @@
 package com.Zenvy.dto;
 
 import com.Zenvy.models.Imovel;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class ImovelSimplesDTO {
     private Long id;
     private String nome;
@@ -17,6 +22,4 @@ public class ImovelSimplesDTO {
         this.precoPorNoite = imovel.getPrecoPorNoite();
         this.imagens = imovel.getImagens();
     }
-
-    // getters e setters
 }

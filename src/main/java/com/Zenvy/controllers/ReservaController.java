@@ -47,7 +47,14 @@ public class ReservaController {
         return ResponseEntity.ok(dto);
     }
 
-
+    @GetMapping("/minhas")
+    @PreAuthorize("hasAuthority('ROLE_HOSPEDE')")
+    public ResponseEntity<List<ReservaDTO>> minhasReservas(Authentication authentication) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        List<Reserva> reservas = reservaService.listarPorHospede(usuarioLogado.getId());
+        List<ReservaDTO> dto = reservas.stream().map(ReservaDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok(dto);
+    }
 
 
     @GetMapping("/listarPorImovel/{imovelId}")

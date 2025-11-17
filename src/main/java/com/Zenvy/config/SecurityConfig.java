@@ -10,7 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter; // ⭐️ NOVO IMPORT
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,10 +26,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
+
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+
 
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos
@@ -41,8 +42,10 @@ public class SecurityConfig {
                                 "/galeria",
                                 "/imoveis/publicos",
                                 "/imoveis/filtro",
+                                "/imoveis/{id}",
+                                "/imoveis/uploadImagem/**",
                                 "/imoveis/listar",
-                                "/imoveis/*"
+                                "/reservas/**"
                         ).permitAll()
 
                         // Endpoints do anfitrião
@@ -52,22 +55,23 @@ public class SecurityConfig {
                                 "/imoveis/atualizar/**"
                         ).hasAuthority("ROLE_ANFITRIAO")
 
-                        // Autenticados
+                        // Endpoints que precisam de autenticação (hospede ou admin)
                         .requestMatchers(
-                                "/usuarios/me",
-                                "/reservas/**"
+                                "/usuarios/me"
                         ).authenticated()
 
-                        // Outros
+                        // Qualquer outro
                         .anyRequest().authenticated()
                 )
 
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
-        // CORREÇÃO AQUI
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class);
 
         return http.build();
     }
@@ -76,7 +80,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // frontend
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

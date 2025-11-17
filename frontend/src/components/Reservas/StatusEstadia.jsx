@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAccessToken, logout } from '../../services/AuthService/AuthService';
 import './StatusEstadia.css';
 
 const API_BASE_URL = 'http://localhost:8080/reservas';
@@ -10,14 +11,27 @@ const StatusEstadia = () => {
     const [reservas, setReservas] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Substitua esse ID pelo usuário logado ou um parâmetro dinâmico
-    const hospedeId = 2;
+    const token = getAccessToken();
 
     const fetchReservas = async () => {
+        if (!token) {
+            logout();
+            navigate('/login');
+            return;
+        }
+
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE_URL}/listarPorHospede/${hospedeId}`);
-            if (!res.ok) throw new Error('Erro ao buscar reservas');
+            const res = await fetch(`${API_BASE_URL}/minhas`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) throw new Error(`Erro ao buscar reservas: ${res.status}`);
+
             const data = await res.json();
             setReservas(data);
         } catch (err) {
@@ -38,8 +52,12 @@ const StatusEstadia = () => {
         try {
             const res = await fetch(`${API_BASE_URL}/cancelar/${reservaId}`, {
                 method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
-            if (!res.ok) throw new Error('Erro ao cancelar reserva');
+
+            if (!res.ok) throw new Error(`Erro ao cancelar reserva: ${res.status}`);
             alert('Estadia cancelada!');
             fetchReservas();
         } catch (err) {
@@ -52,10 +70,14 @@ const StatusEstadia = () => {
         try {
             const res = await fetch(`${API_BASE_URL}/atualizar/${reservaId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'CONCLUIDA' }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: 'CONCLUIDA' })
             });
-            if (!res.ok) throw new Error('Erro ao concluir reserva');
+
+            if (!res.ok) throw new Error(`Erro ao concluir reserva: ${res.status}`);
             alert('Estadia concluída!');
             fetchReservas();
         } catch (err) {
@@ -78,7 +100,7 @@ const StatusEstadia = () => {
                 <div key={reserva.id} className="reserva-card">
                     <div className="reserva-info">
                         <img
-                            src={reserva.imovel.fotos?.length > 0 ? BASE_IMAGE_URL + reserva.imovel.fotos[0] : ''}
+                            src={reserva.imovel.imagens?.length > 0 ? BASE_IMAGE_URL + reserva.imovel.imagens[0] : ''}
                             alt={reserva.imovel.nome}
                             className="reserva-image"
                         />
