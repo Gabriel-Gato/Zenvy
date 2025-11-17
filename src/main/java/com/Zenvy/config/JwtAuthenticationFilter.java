@@ -33,13 +33,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Permite acesso a arquivos estáticos
+        // Permite acesso direto a /uploads
         if (request.getServletPath().startsWith("/uploads/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         final String authHeader = request.getHeader("Authorization");
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -57,13 +58,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (jwtService.isTokenValid(jwt, usuario)) {
 
-                    // 🔥 Novo trecho: extrai a role diretamente do token
-                    String role = jwtService.extractClaim(jwt, claims -> claims.get("authorities", String.class));
+                    // PEGANDO AS AUTHORITIES DO TOKEN
+                    Object rawAuthorities = jwtService.extractClaim(jwt,
+                            claims -> claims.get("authorities")
+                    );
 
-                    // Cria a lista de authorities a partir do JWT
-                    List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+                    List<GrantedAuthority> authorities;
 
-                    // Cria o token de autenticação com a role correta
+                    if (rawAuthorities instanceof List<?>) {
+
+                        authorities = ((List<?>) rawAuthorities).stream()
+                                .map(Object::toString)
+                                .map(SimpleGrantedAuthority::new)
+                                .map(a -> (GrantedAuthority) a)
+                                .toList();
+
+                    } else if (rawAuthorities instanceof String str) {
+
+                        authorities = List.of(new SimpleGrantedAuthority(str));
+
+                    } else {
+                        authorities = List.of();
+                    }
+
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     usuario,
@@ -73,7 +90,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // Define o usuário autenticado no contexto de segurança
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }

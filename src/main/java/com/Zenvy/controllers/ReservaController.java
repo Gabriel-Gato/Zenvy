@@ -2,10 +2,12 @@ package com.Zenvy.controllers;
 
 import com.Zenvy.dto.ReservaDTO;
 import com.Zenvy.models.Reserva;
+import com.Zenvy.models.Usuario;
 import com.Zenvy.services.ReservaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,15 +20,18 @@ public class ReservaController {
 
     private final ReservaService reservaService;
 
-    @PostMapping("/criar/{imovelId}/{hospedeId}")
+    @PostMapping("/criar/{imovelId}")
     public ResponseEntity<Reserva> criarReserva(
             @PathVariable Long imovelId,
-            @PathVariable Long hospedeId,
+            Authentication authentication,
             @RequestBody Reserva reserva) {
+
+        Long hospedeId = ((Usuario) authentication.getPrincipal()).getId();
 
         var novaReserva = reservaService.criarReserva(imovelId, hospedeId, reserva);
         return ResponseEntity.ok(novaReserva);
     }
+
 
     @GetMapping("/listar")
     public ResponseEntity<List<Reserva>> listarTodas() {

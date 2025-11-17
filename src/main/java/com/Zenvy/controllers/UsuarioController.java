@@ -2,6 +2,7 @@ package com.Zenvy.controllers;
 
 import com.Zenvy.dto.AuthResponse;
 import com.Zenvy.dto.LoginRequest;
+import com.Zenvy.dto.UsuarioDTO;
 import com.Zenvy.models.Usuario;
 import com.Zenvy.services.UsuarioService;
 import jakarta.validation.Valid;
@@ -43,9 +44,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Usuario> getMe(Authentication authentication) {
+    public ResponseEntity<UsuarioDTO> getMe(Authentication authentication) {
         Usuario usuario = (Usuario) authentication.getPrincipal();
-        return ResponseEntity.ok(usuario);
+        return ResponseEntity.ok(new UsuarioDTO(usuario));
     }
 
     @PutMapping("/me")

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,15 +33,18 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // ----------------------- CLAIMS -----------------------
+    // ----------------------- CREATE CLAIMS -----------------------
     private Map<String, Object> createClaims(UserDetails userDetails) {
-        String authorities = userDetails.getAuthorities().stream()
+
+        // Aqui vira uma lista de Strings, ex: ["ROLE_USER"]
+        List<String> authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.toList());
+
         return Map.of("authorities", authorities);
     }
 
-    // ----------------------- GENERATE TOKEN -----------------------
+    // ----------------------- TOKEN GENERATOR -----------------------
     private String generateToken(Map<String, Object> extraClaims, String subject, boolean isRefreshToken) {
         long expiration = isRefreshToken ? refreshTokenExpiration : accessTokenExpiration;
 
@@ -53,26 +57,21 @@ public class JwtService {
                 .compact();
     }
 
-    // ----------------------- ACCESS TOKEN -----------------------
     public String generateAccessToken(UserDetails userDetails) {
         return generateToken(createClaims(userDetails), userDetails.getUsername(), false);
     }
 
-    // ----------------------- REFRESH TOKEN -----------------------
     public String generateRefreshToken(UserDetails userDetails) {
-        // Refresh token não precisa de claims extras
-        return generateToken(Map.of(), userDetails.getUsername(), true);
+        return generateToken(createClaims(userDetails), userDetails.getUsername(), true);
     }
 
     // ----------------------- VALIDATION -----------------------
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return extractUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return extractUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     // ----------------------- EXTRACT CLAIMS -----------------------
@@ -85,8 +84,7 @@ public class JwtService {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        return claimsResolver.apply(extractAllClaims(token));
     }
 
     private Claims extractAllClaims(String token) {
