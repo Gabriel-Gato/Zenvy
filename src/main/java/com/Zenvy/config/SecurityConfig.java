@@ -44,8 +44,8 @@ public class SecurityConfig {
                                 "/imoveis/filtro",
                                 "/imoveis/{id}",
                                 "/imoveis/uploadImagem/**",
-                                "/imoveis/listar",
-                                "/reservas/**"
+                                "/imoveis/listar"
+
                         ).permitAll()
 
                         // Endpoints do anfitrião
@@ -57,7 +57,9 @@ public class SecurityConfig {
 
                         // Endpoints que precisam de autenticação (hospede ou admin)
                         .requestMatchers(
-                                "/usuarios/me"
+                                "/usuarios/me",
+                                "/reservas/**",
+                                "/avaliacao/**"
                         ).authenticated()
 
                         // Qualquer outro

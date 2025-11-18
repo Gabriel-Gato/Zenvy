@@ -1,5 +1,6 @@
 package com.Zenvy.controllers;
 
+import com.Zenvy.dto.AvaliacaoDTO;
 import com.Zenvy.models.Avaliacao;
 import com.Zenvy.services.AvaliacaoService;
 
@@ -34,9 +35,14 @@ public class AvaliacaoController {
     }
 
     @GetMapping("/imovel/{imovelId}")
-    public ResponseEntity<List<Avaliacao>> listarPorImovel(@PathVariable Long imovelId) {
-        return ResponseEntity.ok(avaliacaoService.listarPorImovel(imovelId));
+    public ResponseEntity<List<AvaliacaoDTO>> listarPorImovel(@PathVariable Long imovelId) {
+        var avaliacoes = avaliacaoService.listarPorImovel(imovelId);
+        var dtoList = avaliacoes.stream()
+                .map(AvaliacaoDTO::new)
+                .toList();
+        return ResponseEntity.ok(dtoList);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Avaliacao> atualizar(

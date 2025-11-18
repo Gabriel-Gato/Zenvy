@@ -52,9 +52,7 @@ const StatusEstadia = () => {
         try {
             const res = await fetch(`${API_BASE_URL}/cancelar/${reservaId}`, {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (!res.ok) throw new Error(`Erro ao cancelar reserva: ${res.status}`);
@@ -66,9 +64,9 @@ const StatusEstadia = () => {
         }
     };
 
-    const handleConcluir = async (reservaId) => {
+    const handleConcluir = async (reserva) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/atualizar/${reservaId}`, {
+            const res = await fetch(`${API_BASE_URL}/atualizar/${reserva.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,7 +77,10 @@ const StatusEstadia = () => {
 
             if (!res.ok) throw new Error(`Erro ao concluir reserva: ${res.status}`);
             alert('Estadia concluída!');
-            fetchReservas();
+
+            // ⭐ AGORA PASSA O ID DO IMÓVEL (CORRETO)
+            navigate(`/avaliacao/${reserva.imovel.id}`);
+
         } catch (err) {
             console.error(err);
             alert('Erro ao concluir estadia.');
@@ -95,15 +96,22 @@ const StatusEstadia = () => {
     return (
         <div className="status-estadia-container">
             <h1>Minhas Estadias</h1>
+
             {reservas.length === 0 && <p>Nenhuma estadia encontrada.</p>}
+
             {reservas.map((reserva) => (
                 <div key={reserva.id} className="reserva-card">
                     <div className="reserva-info">
                         <img
-                            src={reserva.imovel.imagens?.length > 0 ? BASE_IMAGE_URL + reserva.imovel.imagens[0] : ''}
+                            src={
+                                reserva.imovel.imagens?.length > 0
+                                    ? BASE_IMAGE_URL + reserva.imovel.imagens[0]
+                                    : ''
+                            }
                             alt={reserva.imovel.nome}
                             className="reserva-image"
                         />
+
                         <div className="reserva-detalhes">
                             <h2>{reserva.imovel.nome}</h2>
                             <p>{reserva.imovel.localizacao}</p>
@@ -113,12 +121,14 @@ const StatusEstadia = () => {
                             <p>Valor total: R${reserva.valorTotal}</p>
                         </div>
                     </div>
+
                     <div className="reserva-actions">
                         <button onClick={() => handleChat(reserva.imovel.id)}>Chat</button>
-                        {reserva.status === 'CONFIRMADA' && (
+
+                        {(reserva.status === 'SOLICITADA' || reserva.status === 'CONFIRMADA') && (
                             <>
                                 <button onClick={() => handleCancelar(reserva.id)}>Cancelar</button>
-                                <button onClick={() => handleConcluir(reserva.id)}>Concluir</button>
+                                <button onClick={() => handleConcluir(reserva)}>Concluir</button>
                             </>
                         )}
                     </div>

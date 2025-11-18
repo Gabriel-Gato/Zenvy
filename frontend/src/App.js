@@ -14,6 +14,8 @@ import AdicionarImovel from './components/GerenciarCasas/AdicionarImovel';
 import EditarImovel from './components/GerenciarCasas/EditarImovel';
 import CasaExpandida from './components/Casas/CasaExpandida';
 import Reservas from './components/Reservas/StatusEstadia';
+import GerenciarEstadias from './components/GerenciarEstadias/GerenciarEstadias';
+import Avaliacao from './components/Avaliacao/Avaliacao';
 import './App.css';
 
 function App() {
@@ -84,6 +86,10 @@ function App() {
             <Route path="/casaExpandida/:id" element={<CasaExpandida />} />
 
             <Route path="/statusEstadia" element={<Reservas />} />
+
+            <Route path="/gerenciarEstadias" element={<ProtectedRoute><GerenciarEstadias /> </ProtectedRoute>} />
+
+            <Route path="/avaliacao/:id" element={<Avaliacao /> } />
 
 
         </Routes>

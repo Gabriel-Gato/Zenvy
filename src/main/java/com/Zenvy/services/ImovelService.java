@@ -125,8 +125,13 @@ public class ImovelService {
                 imovel.getLocalizacao(),
                 imovel.getPrecoPorNoite(),
                 fotos,
-                avaliacaoService.calcularMediaPorImovel(imovel.getId())
+                avaliacaoService.calcularMediaPorImovel(imovel.getId()),
+                imovel.getCapacidadeHospedes(),
+                imovel.getQuartos(),
+                imovel.getDescricao(),
+                imovel.getComodidades()
         );
+
     }
 
     public List<ImovelResponseDTO> listarTodos() {
@@ -146,8 +151,13 @@ public class ImovelService {
                             imovel.getLocalizacao(),
                             imovel.getPrecoPorNoite(),
                             fotos,
-                            avaliacaoService.calcularMediaPorImovel(imovel.getId())
+                            avaliacaoService.calcularMediaPorImovel(imovel.getId()),
+                            imovel.getCapacidadeHospedes(),
+                            imovel.getQuartos(),
+                            imovel.getDescricao(),
+                            imovel.getComodidades()
                     );
+
                 })
                 .toList();
     }

@@ -34,9 +34,14 @@ public class ReservaController {
 
 
     @GetMapping("/listar")
-    public ResponseEntity<List<Reserva>> listarTodas() {
-        return ResponseEntity.ok(reservaService.listarTodas());
+    public ResponseEntity<List<ReservaDTO>> listarTodas() {
+        List<Reserva> reservas = reservaService.listarTodas();
+        List<ReservaDTO> dtos = reservas.stream()
+                .map(ReservaDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
+
 
     @GetMapping("/listarPorHospede/{hospedeId}")
     public ResponseEntity<List<ReservaDTO>> listarPorHospede(@PathVariable Long hospedeId) {
@@ -55,6 +60,13 @@ public class ReservaController {
         List<ReservaDTO> dto = reservas.stream().map(ReservaDTO::new).collect(Collectors.toList());
         return ResponseEntity.ok(dto);
     }
+
+    @PutMapping("/confirmar/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
+    public ResponseEntity<Reserva> confirmarReserva(@PathVariable Long id) {
+        return ResponseEntity.ok(reservaService.confirmarReserva(id));
+    }
+
 
 
     @GetMapping("/listarPorImovel/{imovelId}")

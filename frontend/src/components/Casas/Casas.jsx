@@ -131,7 +131,8 @@ const Casas = () => {
 
                 const local = item.localizacao || item.cidade || '';
 
-                const avaliacao = item.avaliacaoMedia ?? item.avaliacao ?? 0;
+                const avaliacao = Number(item.avaliacaoMedia) || 0;
+
 
                 return {
                     id: item.id,

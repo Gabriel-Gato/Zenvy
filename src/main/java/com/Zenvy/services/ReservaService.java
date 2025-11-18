@@ -58,7 +58,7 @@ public class ReservaService {
 
         reserva.setImovel(imovel);
         reserva.setHospede(hospede);
-        reserva.setStatus(StatusReserva.CONFIRMADA);
+        reserva.setStatus(StatusReserva.SOLICITADA);
 
         var reservaSalva = reservaRepository.save(reserva);
 
@@ -67,7 +67,7 @@ public class ReservaService {
                     reservaSalva.getHospede().getEmail(),
                     "Confirmação de Reserva - " + imovel,
                     "Olá " + hospede.getNome() + ",\n\n" +
-                            "Sua reserva no imóvel foi confirmada!\n" +
+                            "Sua reserva no imóvel foi confirmada! mas ainda espera a confirmação da proprietaria\n" +
                             "Check-in: " + reservaSalva.getDataCheckin() + "\n" +
                             "Check-out: " + reservaSalva.getDataCheckout() + "\n" +
                             "Valor total: R$ " + reservaSalva.getValorTotal() + "\n\n" +
@@ -78,6 +78,36 @@ public class ReservaService {
         }
         return reservaSalva;
     }
+
+    public Reserva confirmarReserva(Long reservaId) {
+        var reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada"));
+
+        if (reserva.getStatus() != StatusReserva.SOLICITADA) {
+            throw new BusinessException("Reserva não pode ser confirmada");
+        }
+
+        reserva.setStatus(StatusReserva.CONFIRMADA);
+        var reservaSalva = reservaRepository.save(reserva);
+
+        try {
+            emailService.enviarConfirmacaoDeReserva(
+                    reservaSalva.getHospede().getEmail(),
+                    "Confirmação de Reserva - " + reservaSalva.getImovel(),
+                    "Olá " + reservaSalva.getHospede().getNome() + ",\n\n" +
+                            "Sua reserva no imóvel foi confirmada pela proprietaria!\n" +
+                            "Check-in: " + reservaSalva.getDataCheckin() + "\n" +
+                            "Check-out: " + reservaSalva.getDataCheckout() + "\n" +
+                            "Valor total: R$ " + reservaSalva.getValorTotal() + "\n\n" +
+                            "Obrigado por reservar com o Arbnb!"
+            );
+        } catch (EmailException e) {
+            System.err.println("Falha ao enviar e-mail de confirmação: " + e.getMessage());
+        }
+
+        return reservaSalva;
+    }
+
 
 
     public List<Reserva> listarTodas() {

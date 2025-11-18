@@ -2,6 +2,7 @@ package com.Zenvy.controllers;
 
 import com.Zenvy.dto.FiltroImovelRequest;
 import com.Zenvy.dto.ImovelResponseDTO;
+import com.Zenvy.dto.ImovelSimplesDTO;
 import com.Zenvy.models.Imovel;
 import com.Zenvy.models.Usuario;
 import com.Zenvy.services.ImovelService;
@@ -13,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,10 +37,21 @@ public class ImovelController {
     }
 
     @GetMapping("/filtro")
-    public ResponseEntity<List<Imovel>> filtrar(@Valid FiltroImovelRequest filtro) {
+    public ResponseEntity<List<ImovelSimplesDTO>> filtrar(@Valid FiltroImovelRequest filtro) {
+
+        // Busca os imóveis filtrados
         List<Imovel> resultados = imovelService.filtrarImoveis(filtro);
-        return ResponseEntity.ok(resultados);
+
+        // Converte cada Imovel em ImovelSimplesDTO
+        List<ImovelSimplesDTO> dtoResultados = resultados.stream()
+                .map(imovel -> new ImovelSimplesDTO(imovel)) // usa o construtor do DTO
+                .collect(Collectors.toList()); // compatível com Java 8
+
+        return ResponseEntity.ok(dtoResultados);
     }
+
+
+
 
     @PostMapping("/uploadImagens/{id}")
     public ResponseEntity<Imovel> uploadImagens(

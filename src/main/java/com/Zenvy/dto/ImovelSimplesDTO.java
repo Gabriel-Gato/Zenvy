@@ -14,6 +14,7 @@ public class ImovelSimplesDTO {
     private String localizacao;
     private Double precoPorNoite;
     private List<String> imagens;
+    private Double avaliacaoMedia;
 
     public ImovelSimplesDTO(Imovel imovel) {
         this.id = imovel.getId();
@@ -21,5 +22,16 @@ public class ImovelSimplesDTO {
         this.localizacao = imovel.getLocalizacao();
         this.precoPorNoite = imovel.getPrecoPorNoite();
         this.imagens = imovel.getImagens();
+
+        var avaliacoes = imovel.getAvaliacoes();
+        if (avaliacoes == null || avaliacoes.isEmpty()) {
+            this.avaliacaoMedia = 0.0;
+        } else {
+            this.avaliacaoMedia = avaliacoes.stream()
+                    .mapToDouble(a -> a.getNota() != null ? a.getNota() : 0.0)
+                    .average()
+                    .orElse(0.0);
+        }
     }
 }
+

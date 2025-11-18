@@ -428,3 +428,89 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ====== Avaliações ====== */
+.avaliacoes-section {
+    margin-top: 40px;
+}
+
+.avaliacoes-section h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.avaliacoes-section h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+.avaliacao-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.avaliacao-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.avaliacao-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.avaliacao-header .usuario-nome {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.avaliacao-header .nota {
+    display: flex;
+    align-items: center;
+}
+
+.avaliacao-header .nota span {
+    margin-left: 6px;
+    font-weight: 500;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* Estrelas para nota */
+.estrelas {
+    color: #ffb400;
+    font-size: 1rem;
+    margin-right: 5px;
+}
+
+.avaliacao-card p {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Linha separando da descrição */
+.descricao-section + .avaliacoes-section {
+    margin-top: 50px;
+    padding-top: 25px;
+    border-top: 1px solid #ddd;
+}

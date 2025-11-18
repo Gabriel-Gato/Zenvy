@@ -7,7 +7,6 @@ import './CasaExpandida.css';
 
 const API_BASE_URL = 'http://localhost:8080/imoveis';
 const RESERVA_URL = 'http://localhost:8080/reservas/criar';
-const USUARIO_ME_URL = 'http://localhost:8080/usuarios/me';
 const BASE_IMAGE_URL = 'http://localhost:8080/uploads/imagemImoveis/';
 
 const CasaExpandida = () => {
@@ -27,6 +26,7 @@ const CasaExpandida = () => {
         fotos: [],
     });
 
+    const [avaliacoes, setAvaliacoes] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000));
@@ -71,7 +71,40 @@ const CasaExpandida = () => {
                 console.error(err);
             }
         };
+
         fetchImovel();
+    }, [id, navigate]);
+
+    // Buscar avaliações
+    useEffect(() => {
+        const fetchAvaliacoes = async () => {
+            const token = getAccessToken();
+            if (!token) {
+                logout();
+                navigate('/login');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/avaliacao/imovel/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ao buscar avaliações: ${response.status}`);
+                }
+
+                const data = await response.json();
+                setAvaliacoes(data);
+            } catch (err) {
+                console.error(err);
+                alert(err.message);
+            }
+        };
+
+        fetchAvaliacoes();
     }, [id, navigate]);
 
     // Atualiza preço total
@@ -80,36 +113,24 @@ const CasaExpandida = () => {
         setTotalPrice(nights * imovelData.precoPorNoite);
     }, [startDate, endDate, imovelData.precoPorNoite]);
 
-    const nextImage = () => setCurrentIndex((prev) => (prev + 1) % imovelData.fotos.length);
-    const prevImage = () => setCurrentIndex((prev) => (prev - 1 + imovelData.fotos.length) % imovelData.fotos.length);
-
-    // Busca ID do usuário logado
-    const fetchUsuarioLogado = async () => {
-        const token = getAccessToken();
-        if (!token) {
-            logout();
-            navigate('/login');
-            return null;
-        }
-        try {
-            const response = await fetch(USUARIO_ME_URL, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (!response.ok) throw new Error('Erro ao obter usuário logado');
-            const usuario = await response.json();
-            return usuario.id;
-        } catch (err) {
-            console.error(err);
-            logout();
-            navigate('/login');
-            return null;
-        }
+    // Carrossel
+    const nextImage = () => {
+        if (!imovelData.fotos || imovelData.fotos.length === 0) return;
+        setCurrentIndex((prev) => (prev + 1) % imovelData.fotos.length);
+    };
+    const prevImage = () => {
+        if (!imovelData.fotos || imovelData.fotos.length === 0) return;
+        setCurrentIndex((prev) => (prev - 1 + imovelData.fotos.length) % imovelData.fotos.length);
     };
 
     // Função de pagamento / reserva
     const handlePayment = async () => {
-        const hospedeId = await fetchUsuarioLogado();
-        if (!hospedeId) return;
+        const token = getAccessToken();
+        if (!token) {
+            logout();
+            navigate('/login');
+            return;
+        }
 
         const reservaBody = {
             dataCheckin: startDate.toISOString().split('T')[0],
@@ -118,8 +139,7 @@ const CasaExpandida = () => {
         };
 
         try {
-            const token = getAccessToken();
-            const response = await fetch(`${RESERVA_URL}/${imovelData.id}/${hospedeId}`, {
+            const response = await fetch(`${RESERVA_URL}/${imovelData.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -147,7 +167,11 @@ const CasaExpandida = () => {
             <div className="carousel">
                 {imovelData.fotos.length > 0 && (
                     <>
-                        <img className="carousel-image" src={imovelData.fotos[currentIndex]} alt={`Imagem ${currentIndex + 1}`} />
+                        <img
+                            className="carousel-image"
+                            src={imovelData.fotos[currentIndex]}
+                            alt={`Imagem ${currentIndex + 1}`}
+                        />
                         <button className="carousel-btn left" onClick={prevImage}>‹</button>
                         <button className="carousel-btn right" onClick={nextImage}>›</button>
                     </>
@@ -172,6 +196,29 @@ const CasaExpandida = () => {
                         <h2>Descrição</h2>
                         <p>{imovelData.descricao}</p>
                     </div>
+
+                    <hr className="section-divider" />
+
+                    {/* Avaliações */}
+                    <div className="avaliacoes-section">
+                        <h2>Avaliações</h2>
+                        {avaliacoes.length === 0 && <p>Sem avaliações ainda.</p>}
+                        {avaliacoes.map((avaliacao, index) => (
+                            <div key={index} className="avaliacao-card">
+                                <div className="avaliacao-header">
+                                    <div className="usuario-nome">{avaliacao.nomeUsuario}</div>
+                                    <div className="nota">
+                                        <div className="estrelas">
+                                            {"★".repeat(avaliacao.nota) + "☆".repeat(5 - avaliacao.nota)}
+                                        </div>
+                                        <span>{avaliacao.nota}/5</span>
+                                    </div>
+                                </div>
+                                <p>{avaliacao.comentario}</p>
+                            </div>
+                        ))}
+
+                    </div>
                 </div>
 
                 <div className="reserva-right">
@@ -179,7 +226,6 @@ const CasaExpandida = () => {
                         <div className="reserva-price">R${imovelData.precoPorNoite}</div>
                         <div className="reserva-duration">por noite</div>
 
-                        {/* Datas */}
                         <div className="date-selection">
                             <label>Check-in</label>
                             <DatePicker

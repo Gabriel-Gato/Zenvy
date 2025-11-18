@@ -15,6 +15,7 @@ public class ReservaDTO {
     private Double valorTotal;
     private String status;
     private ImovelSimplesDTO imovel;
+    private HospedeDTO hospede;
 
     public ReservaDTO(Reserva reserva) {
         this.id = reserva.getId();
@@ -23,5 +24,6 @@ public class ReservaDTO {
         this.valorTotal = reserva.getValorTotal();
         this.status = reserva.getStatus().name();
         this.imovel = new ImovelSimplesDTO(reserva.getImovel());
+        this.hospede = new HospedeDTO(reserva.getHospede());
     }
 }
