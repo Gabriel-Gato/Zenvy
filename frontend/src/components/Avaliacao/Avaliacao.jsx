@@ -108,9 +108,14 @@ const Avaliacao = () => {
                 />
             </div>
 
-            <button onClick={handleEnviar} disabled={loading || !usuario}>
+            <button
+                className="avaliacao-enviar-btn"
+                onClick={handleEnviar}
+                disabled={loading || !usuario}
+            >
                 {loading ? 'Enviando...' : 'Enviar Avaliação'}
             </button>
+
         </div>
     );
 };

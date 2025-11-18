@@ -114,11 +114,11 @@ const StatusEstadia = () => {
 
                         <div className="reserva-detalhes">
                             <h2>{reserva.imovel.nome}</h2>
-                            <p>{reserva.imovel.localizacao}</p>
-                            <p>Check-in: {new Date(reserva.dataCheckin).toLocaleDateString()}</p>
-                            <p>Check-out: {new Date(reserva.dataCheckout).toLocaleDateString()}</p>
-                            <p>Status: {reserva.status}</p>
-                            <p>Valor total: R${reserva.valorTotal}</p>
+                            <p><b>{reserva.imovel.localizacao}</b></p>
+                            <p><b>Check-in:</b> {new Date(reserva.dataCheckin).toLocaleDateString()}</p>
+                            <p><b>Check-out:</b> {new Date(reserva.dataCheckout).toLocaleDateString()}</p>
+                            <p><b>Status:</b> {reserva.status}</p>
+                            <p><b>Valor total:</b> R${reserva.valorTotal}</p>
                         </div>
                     </div>
 

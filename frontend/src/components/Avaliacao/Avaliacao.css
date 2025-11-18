@@ -1,45 +1,92 @@
+/* Avaliacao.css */
+
 .avaliacao-container {
     max-width: 600px;
     margin: 40px auto;
-    padding: 20px;
-    border-radius: 12px;
-    background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: 'Roboto', sans-serif;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Inter', sans-serif;
+    color: #333;
 }
 
 .avaliacao-container h1 {
-    text-align: center;
+    font-size: 28px;
     margin-bottom: 20px;
+    text-align: center;
+    color: #1a1a1a;
 }
 
 .avaliacao-nota p,
 .avaliacao-comentario p {
-    font-weight: bold;
     margin-bottom: 8px;
-}
-
-.estrelas {
-    font-size: 28px;
-    cursor: pointer;
-}
-
-.estrela {
-    color: #ccc;
-    transition: color 0.2s;
-    margin-right: 5px;
-}
-
-.estrela.ativa {
-    color: #f5a623;
-}
-
-textarea {
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    resize: none;
+    font-weight: 600;
     font-size: 16px;
 }
 
+.estrelas {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 68px;
+    cursor: pointer;
+    flex-direction: row-reverse;
+}
+
+.estrela {
+    transition: transform 0.2s, color 0.2s;
+    color: #ccc;
+}
+
+.estrela.ativa {
+    color: #ffb400; /* Dourado para estrelas ativas */
+}
+
+.estrela:hover,
+.estrela:hover ~ .estrela {
+    transform: scale(1.2);
+    color: #ffb400;
+}
+
+.avaliacao-comentario textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    resize: none;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.avaliacao-comentario textarea:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 8px rgba(108, 99, 255, 0.3);
+    outline: none;
+}
+
+/* Botão exclusivo para Avaliação */
+.avaliacao-enviar-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: #6c63ff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+}
+
+.avaliacao-enviar-btn:hover:not(:disabled) {
+    background: #574fd6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avaliacao-enviar-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
