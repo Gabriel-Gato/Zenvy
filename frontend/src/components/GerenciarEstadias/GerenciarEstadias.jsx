@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAccessToken, logout } from '../../services/AuthService/AuthService';
 import { jwtDecode } from 'jwt-decode'; // ✅ Import correto
 import './GerenciarEstadias.css';
+import ChatButton from '../../components/ChatButton/ChatButton';
 
 const API_BASE_URL = 'http://localhost:8080/reservas';
 const BASE_IMAGE_URL = 'http://localhost:8080/uploads/imagemImoveis/';
@@ -103,8 +104,8 @@ const GerenciarEstadias = () => {
         }
     };
 
-    const handleChat = (imovelId) => {
-        navigate(`/chat/${imovelId}`);
+    const handleChat = (reservaId) => {
+        navigate(`/mensagens/${reservaId}`);
     };
 
     if (loading) return <div className="gerenciar-estadias-container">Carregando...</div>;
@@ -112,6 +113,12 @@ const GerenciarEstadias = () => {
     return (
         <div className="gerenciar-estadias-container">
             <h1>Gerenciar Estadias</h1>
+            <button
+                className="btn-voltar"
+                onClick={() => navigate(-1)}
+            >
+                ← Voltar
+            </button>
             {reservas.length === 0 && <p>Nenhuma reserva encontrada.</p>}
             {reservas.map((reserva) => (
                 <div key={reserva.id} className="reserva-card">
@@ -145,19 +152,19 @@ const GerenciarEstadias = () => {
                     </div>
 
                     <div className="reserva-actions">
-                        <button onClick={() => handleChat(reserva.imovel.id)}>Chat</button>
+                        <ChatButton reservaId={reserva.id} />
 
-                        {/* Botão Confirmar apenas para anfitriões */}
+                        {/* Botão Confirmar */}
                         {isAnfitriao && reserva.status === 'SOLICITADA' && (
                             <button onClick={() => handleConfirmar(reserva.id)}>Confirmar</button>
                         )}
 
-                        {/* Botão Cancelar apenas em solicitações ou confirmadas */}
+                        {/* Botão Cancelar */}
                         {(reserva.status === 'SOLICITADA' || reserva.status === 'CONFIRMADA') && (
                             <button onClick={() => handleCancelar(reserva.id)}>Cancelar</button>
                         )}
 
-                        {/* Botão Apagar sempre visível */}
+                        {/* Botão Apagar */}
                         <button onClick={() => handleApagar(reserva.id)} className="apagar-button">Apagar</button>
                     </div>
                 </div>

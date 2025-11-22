@@ -78,7 +78,7 @@
   text-align: center;
   transition: var(--transition);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer; /* 👈 Agora mostra o cursor de clique */
+  cursor: pointer;
 }
 
 .admin-card:hover {

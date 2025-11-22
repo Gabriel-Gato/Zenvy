@@ -22,11 +22,12 @@ public class DataInitializer implements CommandLineRunner {
 
         if (!usuarioRepository.existsByEmail(ADMIN_EMAIL)) {
             Usuario anfitriao = new Usuario();
-            anfitriao.setNome("Admin Anfitrião");
+            anfitriao.setNome("Camila Silva");
             anfitriao.setEmail(ADMIN_EMAIL);
             anfitriao.setSenha(passwordEncoder.encode("123456"));
-            anfitriao.setTelefone("11999999999");
+            anfitriao.setTelefone("1198765-4321");
             anfitriao.setRole(Role.ROLE_ANFITRIAO); // ⬅️ GARANTE A ROLE
+            anfitriao.setFotoPerfil("Camila.png");
 
             usuarioRepository.save(anfitriao);
 

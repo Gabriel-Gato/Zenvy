@@ -113,11 +113,11 @@
   background: #0099e6;
 }
 
-/* User Info Styles - FOTO MUITO MAIOR */
+/* User Info Styles */
 .user-info {
   display: flex;
   align-items: center;
-  gap: 30px; /* Espaço maior entre a imagem e o texto */
+  gap: 30px;
   padding: 10px 0;
 }
 
@@ -622,83 +622,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Gallery Carousel Styles */
-.carousel-container {
-  max-width: 878px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.carousel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  position: relative;
-}
-
-.carousel-image-container {
-  width: 878px;
-  height: 700px;
-  border-radius: 25px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.carousel-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.carousel-btn {
-  background: #00AAFF;
-  color: white;
-  border: none;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  z-index: 10;
-}
-
-.carousel-btn:hover {
-  background: #0099e6;
-  transform: scale(1.1);
-}
-
-.carousel-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-}
-
-.carousel-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: none;
-  background: #ccc;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.carousel-indicator.active {
-  background: #00AAFF;
-  transform: scale(1.2);
-}
-
-.carousel-indicator:hover {
-  background: #00AAFF;
-}
 
 /* FAQ Interactive Styles */
 .faq-list {
@@ -848,4 +771,96 @@ html {
   height: 100px;
   object-fit: contain;
   border-radius: 8px;
+}
+
+/* Container principal do carrossel */
+.landing-carousel-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+/* Carrossel interno */
+.landing-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Container da imagem */
+.landing-carousel-image-container {
+    width: 650px;
+    height: 400px; /* quadrado próximo */
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Imagem do carrossel */
+.landing-carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+/* Botões do carrossel (quadrados e escuros) */
+.landing-carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 1.6rem;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 6px; /* quadrado com cantos levemente arredondados */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+    z-index: 2;
+    border: none;
+}
+
+/* Hover nos botões */
+.landing-carousel-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Botão anterior */
+.landing-carousel-btn-prev {
+    left: -20px;
+}
+
+/* Botão próximo */
+.landing-carousel-btn-next {
+    right: -20px;
+}
+
+/* Indicadores (bolinhas) */
+.landing-carousel-indicators {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.landing-carousel-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%; /* mantém redondo */
+    border: none;
+    background: #ccc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.landing-carousel-indicator.active {
+    background: #4f46e5;
+    transform: scale(1.2);
 }

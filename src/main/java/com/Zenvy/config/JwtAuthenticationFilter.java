@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (jwtService.isTokenValid(jwt, usuario)) {
 
-                    // PEGANDO AS AUTHORITIES DO TOKEN
+
                     Object rawAuthorities = jwtService.extractClaim(jwt,
                             claims -> claims.get("authorities")
                     );

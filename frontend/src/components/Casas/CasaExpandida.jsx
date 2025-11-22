@@ -7,6 +7,7 @@ import './CasaExpandida.css';
 
 const API_BASE_URL = 'http://localhost:8080/imoveis';
 const RESERVA_URL = 'http://localhost:8080/reservas/criar';
+const RESERVAS_POR_IMOVEL_URL = 'http://localhost:8080/reservas/listarPorImovel';
 const BASE_IMAGE_URL = 'http://localhost:8080/uploads/imagemImoveis/';
 
 const CasaExpandida = () => {
@@ -28,11 +29,54 @@ const CasaExpandida = () => {
 
     const [avaliacoes, setAvaliacoes] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000));
+    const [startDate, setStartDate] = useState(() => {
+        const d = new Date();
+        d.setHours(0,0,0,0);
+        return d;
+    });
+    const [endDate, setEndDate] = useState(() => {
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        d.setHours(0,0,0,0);
+        return d;
+    });
     const [totalPrice, setTotalPrice] = useState(0);
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('credit');
+
+    // datas ocupadas (intervalos { checkin: Date, checkout: Date })
+    const [datasOcupadas, setDatasOcupadas] = useState([]);
+
+    // Busca reservas do imóvel para bloquear datas
+    const fetchDatasReservadas = async () => {
+        try {
+            const token = getAccessToken();
+            const res = await fetch(`${RESERVAS_POR_IMOVEL_URL}/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+                console.error('Erro ao buscar reservas:', res.status);
+                setDatasOcupadas([]);
+                return;
+            }
+
+            const data = await res.json();
+
+            // transforma strings do DTO em Date (zeroando horas)
+            const intervalos = (data || []).map(r => {
+                const checkin = new Date(r.dataCheckin);
+                checkin.setHours(0,0,0,0);
+                const checkout = new Date(r.dataCheckout);
+                checkout.setHours(0,0,0,0);
+                return { checkin, checkout };
+            });
+
+            setDatasOcupadas(intervalos);
+        } catch (err) {
+            console.error('Erro ao carregar datas ocupadas:', err);
+        }
+    };
 
     // Buscar dados do imóvel
     useEffect(() => {
@@ -51,7 +95,7 @@ const CasaExpandida = () => {
                 const data = await response.json();
 
                 const fotos = (data.fotos || data.imagens || []).map(foto =>
-                    foto.startsWith('http') ? foto : BASE_IMAGE_URL + foto
+                    typeof foto === 'string' && foto.startsWith('http') ? foto : BASE_IMAGE_URL + foto
                 );
 
                 setImovelData({
@@ -60,32 +104,34 @@ const CasaExpandida = () => {
                     precoPorNoite: data.precoPorNoite || 0,
                     capacidadeHospedes: data.capacidadeHospedes || '',
                     quartos: data.quartos || '',
-                    cozinha: data.cozinha || 1,
-                    salaDeEstar: data.salaDeEstar || 1,
+                    cozinha: data.cozinha ?? 1,
+                    salaDeEstar: data.salaDeEstar ?? 1,
                     descricao: data.descricao || '',
                     comodidades: data.comodidades || [],
                     fotos,
                     id: data.id
                 });
+
             } catch (err) {
                 console.error(err);
             }
         };
 
         fetchImovel();
+        fetchDatasReservadas();
     }, [id, navigate]);
 
     // Buscar avaliações
     useEffect(() => {
         const fetchAvaliacoes = async () => {
-            const token = getAccessToken();
-            if (!token) {
-                logout();
-                navigate('/login');
-                return;
-            }
-
             try {
+                const token = getAccessToken();
+                if (!token) {
+                    logout();
+                    navigate('/login');
+                    return;
+                }
+
                 const response = await fetch(`http://localhost:8080/avaliacao/imovel/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -100,16 +146,19 @@ const CasaExpandida = () => {
                 setAvaliacoes(data);
             } catch (err) {
                 console.error(err);
-                alert(err.message);
             }
         };
 
         fetchAvaliacoes();
     }, [id, navigate]);
 
-    // Atualiza preço total
+    // Atualiza preço total (garante que nights >= 1)
     useEffect(() => {
-        const nights = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        if (!imovelData.precoPorNoite) {
+            setTotalPrice(0);
+            return;
+        }
+        const nights = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
         setTotalPrice(nights * imovelData.precoPorNoite);
     }, [startDate, endDate, imovelData.precoPorNoite]);
 
@@ -123,12 +172,38 @@ const CasaExpandida = () => {
         setCurrentIndex((prev) => (prev - 1 + imovelData.fotos.length) % imovelData.fotos.length);
     };
 
+
+    const isDateBlocked = (date) => {
+        if (!date) return false;
+        const d = new Date(date);
+        d.setHours(0,0,0,0);
+        return datasOcupadas.some(intervalo => {
+            return d >= intervalo.checkin && d <= intervalo.checkout;
+        });
+    };
+
     // Função de pagamento / reserva
     const handlePayment = async () => {
         const token = getAccessToken();
         if (!token) {
             logout();
             navigate('/login');
+            return;
+        }
+
+        let conflict = false;
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            const dt = new Date(d);
+            dt.setHours(0,0,0,0);
+            if (isDateBlocked(dt)) {
+                conflict = true;
+                break;
+            }
+        }
+
+        if (conflict) {
+            alert('O período selecionado contém dias já reservados. Escolha outro intervalo.');
+            fetchDatasReservadas();
             return;
         }
 
@@ -155,6 +230,11 @@ const CasaExpandida = () => {
 
             alert('Reserva realizada com sucesso!');
             setPaymentModalOpen(false);
+
+            await fetchDatasReservadas();
+
+            navigate('/statusEstadia');
+
         } catch (err) {
             console.error(err);
             alert('Erro ao realizar reserva: ' + err.message);
@@ -165,7 +245,7 @@ const CasaExpandida = () => {
         <div className="casa-expandida-container">
             {/* Carrossel */}
             <div className="carousel">
-                {imovelData.fotos.length > 0 && (
+                {imovelData.fotos && imovelData.fotos.length > 0 && (
                     <>
                         <img
                             className="carousel-image"
@@ -231,26 +311,46 @@ const CasaExpandida = () => {
                             <DatePicker
                                 selected={startDate}
                                 onChange={(date) => {
-                                    if (date >= endDate) setEndDate(new Date(date.getTime() + 24 * 60 * 60 * 1000));
-                                    setStartDate(date);
+                                    if (!date) return;
+                                    const d = new Date(date);
+                                    d.setHours(0,0,0,0);
+
+                                    if (isDateBlocked(d)) {
+                                        alert('Data ocupada. Escolha outra data.');
+                                        return;
+                                    }
+
+                                    if (d >= endDate) setEndDate(new Date(d.getTime() + 24 * 60 * 60 * 1000));
+                                    setStartDate(d);
                                 }}
                                 selectsStart
                                 startDate={startDate}
                                 endDate={endDate}
                                 minDate={new Date()}
+                                filterDate={(date) => !isDateBlocked(date)}
                                 dateFormat="dd/MM/yyyy"
                             />
                             <label>Check-out</label>
                             <DatePicker
                                 selected={endDate}
                                 onChange={(date) => {
-                                    if (date <= startDate) setEndDate(new Date(startDate.getTime() + 24 * 60 * 60 * 1000));
-                                    else setEndDate(date);
+                                    if (!date) return;
+                                    const d = new Date(date);
+                                    d.setHours(0,0,0,0);
+
+                                    if (isDateBlocked(d)) {
+                                        alert('Data ocupada. Escolha outra data.');
+                                        return;
+                                    }
+
+                                    if (d <= startDate) setEndDate(new Date(startDate.getTime() + 24 * 60 * 60 * 1000));
+                                    else setEndDate(d);
                                 }}
                                 selectsEnd
                                 startDate={startDate}
                                 endDate={endDate}
                                 minDate={new Date(startDate.getTime() + 24 * 60 * 60 * 1000)}
+                                filterDate={(date) => !isDateBlocked(date)}
                                 dateFormat="dd/MM/yyyy"
                             />
                         </div>
@@ -260,7 +360,7 @@ const CasaExpandida = () => {
 
                         <hr className="section-divider" />
 
-                        {imovelData.comodidades.length > 0 && (
+                        {imovelData.comodidades && imovelData.comodidades.length > 0 && (
                             <div className="comodidades-section">
                                 <h2>Comodidades</h2>
                                 <div className="comodidades-grid">

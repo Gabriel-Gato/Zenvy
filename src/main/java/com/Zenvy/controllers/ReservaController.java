@@ -70,9 +70,18 @@ public class ReservaController {
 
 
     @GetMapping("/listarPorImovel/{imovelId}")
-    public ResponseEntity<List<Reserva>> listarPorImovel(@PathVariable Long imovelId) {
-        return ResponseEntity.ok(reservaService.listarPorImovel(imovelId));
+    public ResponseEntity<List<ReservaDTO>> listarPorImovel(@PathVariable Long imovelId) {
+
+        List<Reserva> reservas = reservaService.listarPorImovel(imovelId);
+
+        List<ReservaDTO> dtos = reservas.stream()
+                .map(ReservaDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
+
+
 
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<Reserva> atualizar(

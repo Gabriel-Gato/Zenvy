@@ -1,209 +1,205 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './GerenciarCredencial.css';
 
 const GerenciarCredencial = () => {
-  const [userData, setUserData] = useState({
-    id: '',
-    nome: '',
-    telefone: '',
-    email: '',
-    fotoPerfil: ''
-  });
-  const [loading, setLoading] = useState(true);
+    const [userData, setUserData] = useState({ nome: '', telefone: '', email: '', fotoPerfil: '' });
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    carregarUsuario();
-  }, []);
 
-  const carregarUsuario = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      alert('Faça login novamente.');
-      window.location.href = '/login';
-      return;
-    }
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
-    try {
-      const res = await fetch('http://localhost:8080/usuarios/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+    useEffect(() => {
+        carregarUsuario();
+    }, []);
 
-      if (!res.ok) throw new Error('Erro ao carregar dados do usuário');
-      const data = await res.json();
+    const carregarUsuario = async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return window.location.href = '/login';
 
-      const fotoUrl = data.fotoPerfil
-        ? `http://localhost:8080/uploads/fotosUsuarios/${data.fotoPerfil}`
-        : '';
-
-      setUserData({ ...data, fotoPerfil: fotoUrl });
-      setLoading(false);
-      localStorage.setItem('usuario', JSON.stringify({ ...data, fotoPerfil: fotoUrl }));
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao carregar perfil. Faça login novamente.');
-      localStorage.clear();
-      window.location.href = '/login';
-    }
-  };
-
-  const handleInputChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
-  };
-
-  const handleSaveChanges = async () => {
-    const token = localStorage.getItem('accessToken');
-
-    const body = {
-      nome: userData.nome,
-      telefone: userData.telefone,
-      email: userData.email
+        try {
+            const res = await fetch('http://localhost:8080/usuarios/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Erro ao carregar dados do usuário');
+            const data = await res.json();
+            const fotoUrl = data.fotoPerfil ? `http://localhost:8080/uploads/fotosUsuarios/${data.fotoPerfil}` : '';
+            setUserData({ ...data, fotoPerfil: fotoUrl });
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            localStorage.clear();
+            window.location.href = '/login';
+        }
     };
 
-    try {
-      const res = await fetch('http://localhost:8080/usuarios/me', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(body)
-      });
+    const handleInputChange = (e) => setUserData({ ...userData, [e.target.name]: e.target.value });
 
-      if (!res.ok) throw new Error('Erro ao salvar alterações');
-      const updatedUser = await res.json();
+    const handleSaveChanges = async () => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const res = await fetch('http://localhost:8080/usuarios/me', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ nome: userData.nome, telefone: userData.telefone, email: userData.email })
+            });
+            if (!res.ok) throw new Error('Erro ao salvar alterações');
+            const updatedUser = await res.json();
+            const fotoUrl = updatedUser.fotoPerfil ? `http://localhost:8080/uploads/fotosUsuarios/${updatedUser.fotoPerfil}` : '';
+            setUserData({ ...updatedUser, fotoPerfil: fotoUrl });
+            alert('Alterações salvas com sucesso!');
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao salvar alterações.');
+        }
+    };
 
-      const fotoUrl = updatedUser.fotoPerfil
-        ? `http://localhost:8080/uploads/fotosUsuarios/${updatedUser.fotoPerfil}`
-        : '';
+    const handleChangePasswordClick = () => setShowPasswordModal(true);
+    const handleCloseModal = () => {
+        setShowPasswordModal(false);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+    };
 
-      const usuarioAtualizado = { ...updatedUser, fotoPerfil: fotoUrl };
-      setUserData(usuarioAtualizado);
-      localStorage.setItem('usuario', JSON.stringify(usuarioAtualizado));
+    const handlePasswordSave = async () => {
+        if (newPassword !== confirmPassword) {
+            alert('As senhas não coincidem!');
+            return;
+        }
 
-      alert('Alterações salvas com sucesso!');
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao salvar alterações.');
-    }
-  };
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            alert('Usuário não autenticado!');
+            return;
+        }
 
-  const handleAvatarChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+        try {
+            const res = await fetch('http://localhost:8080/usuarios/me/senha', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    currentPassword: currentPassword,
+                    newPassword: newPassword
+                })
+            });
 
-    if (!file.type.startsWith('image/')) {
-      alert('Selecione apenas arquivos de imagem.');
-      return;
-    }
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Erro ao alterar senha');
+            }
 
-    if (file.size > 300 * 1024 * 1024) {
-      alert('A imagem deve ter no máximo 300MB.');
-      return;
-    }
+            alert('Senha alterada com sucesso!');
+            handleCloseModal();
+        } catch (error) {
+            console.error(error);
+            alert(`Erro ao alterar senha: ${error.message}`);
+        }
+    };
 
-    const token = localStorage.getItem('accessToken');
-    const formData = new FormData();
-    formData.append('file', file);
 
-    try {
-      const res = await fetch('http://localhost:8080/usuarios/me/foto', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData
-      });
+    const handleFotoChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-      if (!res.ok) throw new Error('Erro ao fazer upload da foto');
-      const updatedUser = await res.json();
+        const token = localStorage.getItem('accessToken');
+        const formData = new FormData();
+        formData.append('file', file);
 
-      const fotoUrl = updatedUser.fotoPerfil
-        ? `http://localhost:8080/uploads/fotosUsuarios/${updatedUser.fotoPerfil}`
-        : '';
+        try {
+            const res = await fetch('http://localhost:8080/usuarios/me/foto', {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData
+            });
 
-      const usuarioAtualizado = { ...updatedUser, fotoPerfil: fotoUrl };
-      setUserData(usuarioAtualizado);
-      localStorage.setItem('usuario', JSON.stringify(usuarioAtualizado));
+            if (!res.ok) throw new Error('Erro ao atualizar a foto');
 
-      alert('Foto atualizada com sucesso!');
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao fazer upload da foto.');
-    }
-  };
+            const updatedUser = await res.json();
+            const fotoUrl = updatedUser.fotoPerfil
+                ? `http://localhost:8080/uploads/fotosUsuarios/${updatedUser.fotoPerfil}`
+                : '';
+            setUserData({ ...updatedUser, fotoPerfil: fotoUrl });
+            alert('Foto atualizada com sucesso!');
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao atualizar a foto');
+        }
+    };
 
-  if (loading) return <div className="gerenciar-credencial">Carregando...</div>;
+    if (loading) return <div>Carregando...</div>;
 
-  return (
-    <div className="gerenciar-credencial">
-      <div className="back-button-container">
-        <button className="back-btn" onClick={() => window.location.href = '/adminPanel'}>
-          ← Voltar
-        </button>
-      </div>
+    return (
+        <div className="gcredencial-container">
+            {/* Botão Voltar */}
+            <div className="gcredencial-back-btn-container">
+                <button className="gcredencial-back-btn" onClick={() => window.history.back()}>Voltar</button>
+            </div>
 
-      <div className="profile-container">
-        <label htmlFor="avatarInput" className="profile-picture-label">
-          <div className="profile-picture">
-            {userData.fotoPerfil ? (
-              <img src={userData.fotoPerfil} alt="Foto" className="profile-image" />
-            ) : (
-              <div className="ellipse-background"></div>
+            {/* Foto de Perfil */}
+            <label htmlFor="avatarInput" className="gcredencial-avatar-label">
+                <div className="gcredencial-avatar">
+                    {userData.fotoPerfil ?
+                        <img src={userData.fotoPerfil} alt="Foto" /> :
+                        <div className="gcredencial-avatar-placeholder"></div>
+                    }
+                </div>
+            </label>
+            <input
+                type="file"
+                id="avatarInput"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleFotoChange}
+            />
+
+            {/* Seção de Informações */}
+            <div className="gcredencial-info-section">
+                <div className="gcredencial-input-group">
+                    <label className="gcredencial-input-label">Nome</label>
+                    <input className="gcredencial-input" type="text" name="nome" value={userData.nome} onChange={handleInputChange} />
+                    <div className="gcredencial-input-line"></div>
+                </div>
+                <div className="gcredencial-input-group">
+                    <label className="gcredencial-input-label">Telefone</label>
+                    <input className="gcredencial-input" type="tel" name="telefone" value={userData.telefone} onChange={handleInputChange} />
+                    <div className="gcredencial-input-line"></div>
+                </div>
+                <div className="gcredencial-input-group">
+                    <label className="gcredencial-input-label">Email</label>
+                    <input className="gcredencial-input" type="email" name="email" value={userData.email} onChange={handleInputChange} />
+                    <div className="gcredencial-input-line"></div>
+                </div>
+            </div>
+
+            {/* Botões */}
+            <div className="gcredencial-buttons">
+                <button className="gcredencial-save-btn" onClick={handleSaveChanges}>Salvar Alterações</button>
+                <button className="gcredencial-change-pass-btn" onClick={handleChangePasswordClick}>Alterar Senha</button>
+            </div>
+
+            {/* Modal Alterar Senha */}
+            {showPasswordModal && (
+                <div className="gcredencial-modal-overlay">
+                    <div className="gcredencial-modal-content">
+                        <h2>Alterar Senha</h2>
+                        <input type="password" placeholder="Senha atual" className="gcredencial-modal-input" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+                        <input type="password" placeholder="Nova senha" className="gcredencial-modal-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                        <input type="password" placeholder="Confirme a nova senha" className="gcredencial-modal-input" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+                        <div className="gcredencial-modal-buttons">
+                            <button onClick={handleCloseModal}>Cancelar</button>
+                            <button onClick={handlePasswordSave}>Salvar</button>
+                        </div>
+                    </div>
+                </div>
             )}
-          </div>
-        </label>
-        <input
-          type="file"
-          id="avatarInput"
-          accept="image/*"
-          onChange={handleAvatarChange}
-          style={{ display: 'none' }}
-        />
-
-        <div className="user-info-section">
-          <div className="input-group">
-            <label className="input-label">Nome</label>
-            <input
-              type="text"
-              name="nome"
-              value={userData.nome}
-              onChange={handleInputChange}
-              className="user-input"
-            />
-            <div className="input-line"></div>
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">Telefone</label>
-            <input
-              type="tel"
-              name="telefone"
-              value={userData.telefone}
-              onChange={handleInputChange}
-              className="user-input"
-            />
-            <div className="input-line"></div>
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={userData.email}
-              onChange={handleInputChange}
-              className="user-input"
-            />
-            <div className="input-line"></div>
-          </div>
         </div>
-
-        <div className="action-buttons-container">
-          <button className="action-button save-changes-btn" onClick={handleSaveChanges}>
-            Salvar Alterações
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default GerenciarCredencial;

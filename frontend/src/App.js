@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage/LandingPage';
 import Login from './components/Login/Login';
@@ -16,10 +16,25 @@ import CasaExpandida from './components/Casas/CasaExpandida';
 import Reservas from './components/Reservas/StatusEstadia';
 import GerenciarEstadias from './components/GerenciarEstadias/GerenciarEstadias';
 import Avaliacao from './components/Avaliacao/Avaliacao';
+import Mensagens from './components/Mensagens/Mensagens';
 import './App.css';
 
 function App() {
-  return (
+        const [user, setUser] = useState(null);
+
+        useEffect(() => {
+
+            document.title = "Zenvy";
+
+
+            const link = document.createElement("link");
+            link.rel = "icon";
+            link.type = "image/png";
+            link.href = "/icons8-airbnb-50.png";
+            document.head.appendChild(link);
+        });
+
+        return (
     <Router>
       <div className="App">
         <Routes>
@@ -91,11 +106,15 @@ function App() {
 
             <Route path="/avaliacao/:id" element={<Avaliacao /> } />
 
+            <Route path="/mensagens/:reservaId" element={<Mensagens />} />
+
 
         </Routes>
       </div>
     </Router>
   );
 }
+
+
 
 export default App;

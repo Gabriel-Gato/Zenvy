@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import FiltrosModal from './FiltrosModal';
 import NavBar from '../NavBar/NavBar';
 import './Casas.css';
@@ -8,16 +10,13 @@ const Casas = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
-
     const [searchData, setSearchData] = useState({
         local: '',
-        checkIn: '',
-        checkOut: '',
+        checkIn: null,
+        checkOut: null,
         hospedes: ''
     });
-
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-
     const [filtrosAtivos, setFiltrosAtivos] = useState({
         precoMin: 0,
         precoMax: 10000,
@@ -31,9 +30,11 @@ const Casas = () => {
         localizacao: '',
         ordenarPor: 'preco-asc'
     });
-
     const [casas, setCasas] = useState([]);
     const [loading, setLoading] = useState(false);
+
+
+    const datasOcupadas = [];
 
     const carregarUsuario = () => {
         const token = localStorage.getItem('accessToken');
@@ -66,7 +67,7 @@ const Casas = () => {
     useEffect(() => {
         carregarUsuario();
         buscarCasasComFiltros();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, []);
 
     const handleLogout = () => {
@@ -86,11 +87,10 @@ const Casas = () => {
             const localizacaoToSend = f.localizacao || searchData.local || '';
             if (localizacaoToSend) params.append('localizacao', localizacaoToSend);
 
-            if (f.precoMax !== undefined && f.precoMax !== null) {
-                if (f.precoMax < 10000) params.append('precoMaximo', f.precoMax);
+            if (f.precoMax !== undefined && f.precoMax !== null && f.precoMax < 10000) {
+                params.append('precoMaximo', f.precoMax);
             }
 
-            // ⚡ Alteração aqui para número de hóspedes
             const capacidadeMin = Number(searchData.hospedes);
             if (capacidadeMin && capacidadeMin > 0) {
                 params.append('capacidadeMinima', capacidadeMin);
@@ -98,14 +98,12 @@ const Casas = () => {
                 params.append('capacidadeMinima', f.capacidadeMin);
             }
 
-            if (f.quartosMin !== undefined && f.quartosMin !== null) {
-                if (f.quartosMin > 1) params.append('quartosMinimos', f.quartosMin);
+            if (f.quartosMin !== undefined && f.quartosMin !== null && f.quartosMin > 1) {
+                params.append('quartosMinimos', f.quartosMin);
             }
 
             if (f.comodidades && Array.isArray(f.comodidades) && f.comodidades.length > 0) {
-                f.comodidades.forEach(c => {
-                    if (c) params.append('comodidades', c);
-                });
+                f.comodidades.forEach(c => c && params.append('comodidades', c));
             }
 
             const url = `http://localhost:8080/imoveis/filtro?${params.toString()}`;
@@ -126,22 +124,11 @@ const Casas = () => {
                     'https://placehold.co/288x288';
 
                 const nome = item.titulo || item.nome || item.nomeImovel || 'Imóvel sem título';
-
                 const preco = item.valorDiaria ?? item.precoPorNoite ?? item.preco ?? 0;
-
                 const local = item.localizacao || item.cidade || '';
-
                 const avaliacao = Number(item.avaliacaoMedia) || 0;
 
-
-                return {
-                    id: item.id,
-                    imagem,
-                    nome,
-                    precoPorNoite: preco,
-                    localizacao: local,
-                    avaliacao
-                };
+                return { id: item.id, imagem, nome, precoPorNoite: preco, localizacao: local, avaliacao };
             });
 
             setCasas(formatted);
@@ -159,8 +146,8 @@ const Casas = () => {
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        setFiltrosAtivos(prev => ({ ...prev, localizacao: searchData.local }));
         const override = { ...filtrosAtivos, localizacao: searchData.local };
+        setFiltrosAtivos(override);
         buscarCasasComFiltros(override);
     };
 
@@ -168,23 +155,9 @@ const Casas = () => {
     const handleCloseFilters = () => setIsFiltersOpen(false);
 
     const handleApplyFilters = (novosFiltros) => {
-        const merged = {
-            precoMin: novosFiltros.precoMin ?? 0,
-            precoMax: novosFiltros.precoMax ?? 10000,
-            capacidadeMin: novosFiltros.capacidadeMin ?? 1,
-            capacidadeMax: novosFiltros.capacidadeMax ?? 10,
-            quartosMin: novosFiltros.quartosMin ?? 1,
-            quartosMax: novosFiltros.quartosMax ?? 5,
-            cozinha: novosFiltros.cozinha ?? false,
-            salaDeEstar: novosFiltros.salaDeEstar ?? false,
-            comodidades: novosFiltros.comodidades ?? [],
-            localizacao: novosFiltros.localizacao ?? '',
-            ordenarPor: novosFiltros.ordenarPor ?? 'preco-asc'
-        };
-
+        const merged = { ...filtrosAtivos, ...novosFiltros };
         setFiltrosAtivos(merged);
-        const overrideParaBusca = { ...merged };
-        buscarCasasComFiltros(overrideParaBusca);
+        buscarCasasComFiltros(merged);
         setIsFiltersOpen(false);
     };
 
@@ -203,21 +176,12 @@ const Casas = () => {
             ordenarPor: 'preco-asc'
         };
         setFiltrosAtivos(defaults);
-        setSearchData({ local: '', checkIn: '', checkOut: '', hospedes: '' });
+        setSearchData({ local: '', checkIn: null, checkOut: null, hospedes: '' });
         buscarCasasComFiltros(defaults);
     };
 
     const hasActiveFilters = () => {
-        const d = {
-            precoMin: 0,
-            precoMax: 10000,
-            capacidadeMin: 1,
-            capacidadeMax: 10,
-            quartosMin: 1,
-            quartosMax: 5,
-            comodidades: []
-        };
-
+        const d = { precoMin: 0, precoMax: 10000, capacidadeMin: 1, capacidadeMax: 10, quartosMin: 1, quartosMax: 5, comodidades: [] };
         return (
             (filtrosAtivos.precoMin && filtrosAtivos.precoMin > d.precoMin) ||
             (filtrosAtivos.precoMax && filtrosAtivos.precoMax < d.precoMax) ||
@@ -238,6 +202,8 @@ const Casas = () => {
                     <div className="search-card">
                         <form className="search-form" onSubmit={handleSearchSubmit}>
                             <div className="search-fields">
+
+                                {/* ONDE */}
                                 <div className="search-field">
                                     <label className="field-label">Onde</label>
                                     <div className="input-wrapper">
@@ -249,70 +215,42 @@ const Casas = () => {
                                             className="search-input"
                                             placeholder="Buscar lugar"
                                         />
+                                        <div className="input-line"></div>
                                     </div>
                                 </div>
 
                                 <div className="field-separator"></div>
 
+
+                                {/* HÓSPEDES */}
                                 <div className="search-field">
-                                    <label className="field-label">Check-in</label>
-                                    <div className="input-wrapper">
-                                        <input
-                                            type="date"
-                                            name="checkIn"
-                                            value={searchData.checkIn}
-                                            onChange={handleSearchChange}
-                                            className="search-input"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="field-separator"></div>
-
-                                <div className="search-field">
-                                    <label className="field-label">Checkout</label>
-                                    <div className="input-wrapper">
-                                        <input
-                                            type="date"
-                                            name="checkOut"
-                                            value={searchData.checkOut}
-                                            onChange={handleSearchChange}
-                                            className="search-input"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="field-separator"></div>
-
-                                <div className="search-field">
-                                    <label className="field-label">Nº Hospede</label>
+                                    <label className="field-label">Nº Hóspede</label>
                                     <div className="input-wrapper">
                                         <input
                                             type="number"
-                                            name="hospedes"
-                                            value={searchData.hospedes}
-                                            onChange={handleSearchChange}
+                                            name="capacidadeMin"
+                                            value={filtrosAtivos.capacidadeMin}
+                                            onChange={(e) =>
+                                                setFiltrosAtivos((prev) => ({
+                                                    ...prev,
+                                                    capacidadeMin: e.target.value
+                                                }))
+                                            }
                                             className="search-input"
-                                            placeholder="Quantidade"
-                                            min="1"
+                                            placeholder="Quantas pessoas?"
                                         />
+                                        <div className="input-line"></div>
                                     </div>
                                 </div>
 
+                                <div className="field-separator"></div>
 
-
-                                <button
-                                    type="button"
-                                    className="search-btn"
-                                    onClick={handleOpenFilters}
-                                    title="Abrir filtros"
-                                >
-                                    {/* Ícone de filtro */}
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M3 5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        <path d="M10 19H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                    </svg>
+                                {/* BOTÕES */}
+                                <button type="button" className="filter-btn" onClick={handleOpenFilters}>
+                                    <img src="icons8-filtro-50.png" alt="Filtros" width="24" />
+                                </button>
+                                <button type="submit" className="search-btn">
+                                    <img src="icons8-pesquisar-128.png" alt="Buscar" width="24" />
                                 </button>
 
                             </div>
@@ -321,68 +259,46 @@ const Casas = () => {
                 </div>
             </section>
 
+            {/* FILTROS ATIVOS */}
             {hasActiveFilters() && (
-                <div className="filtros-ativos">
-                    <div className="container">
-                        <div className="filtros-tags">
-                            <span className="filtros-label">Filtros aplicados:</span>
-                            {filtrosAtivos.precoMin > 0 && <span className="filtro-tag">Preço min: R$ {filtrosAtivos.precoMin}</span>}
-                            {filtrosAtivos.precoMax < 10000 && <span className="filtro-tag">Preço max: R$ {filtrosAtivos.precoMax}</span>}
-                            {filtrosAtivos.capacidadeMin > 1 && <span className="filtro-tag">Capacidade: {filtrosAtivos.capacidadeMin}+</span>}
-                            {filtrosAtivos.quartosMin > 1 && <span className="filtro-tag">Quartos: {filtrosAtivos.quartosMin}+</span>}
-                            {filtrosAtivos.localizacao && <span className="filtro-tag">Local: {filtrosAtivos.localizacao}</span>}
-                            {filtrosAtivos.comodidades?.length > 0 && <span className="filtro-tag">Comodidades: {filtrosAtivos.comodidades.join(', ')}</span>}
-
-                            <button className="limpar-filtros" onClick={limparTodosFiltros}>Limpar todos</button>
-                        </div>
+                <div className="filtros-aplicados">
+                    <div className="tags-container">
+                        {filtrosAtivos.localizacao && <span className="filtro-tag">Localização: {filtrosAtivos.localizacao}</span>}
+                        {filtrosAtivos.precoMax < 10000 && <span className="filtro-tag">Até R$ {filtrosAtivos.precoMax}</span>}
+                        {filtrosAtivos.capacidadeMin > 1 && <span className="filtro-tag">{filtrosAtivos.capacidadeMin}+ hóspedes</span>}
+                        {filtrosAtivos.quartosMin > 1 && <span className="filtro-tag">{filtrosAtivos.quartosMin}+ quartos</span>}
+                        {filtrosAtivos.comodidades.map((c, i) => <span key={i} className="filtro-tag">{c.replace('_', ' ')}</span>)}
                     </div>
+                    <button className="limpar-filtros-btn" onClick={limparTodosFiltros}>Limpar filtros</button>
                 </div>
             )}
 
+            {/* LISTA DE CASAS */}
             <section className="casas-grid">
                 <div className="container">
-                    <div className="casas-header">
-                        <h2 className="casas-title">
-                            {loading ? 'Buscando casas...' : `${casas.length} casas encontradas`}
-                            {hasActiveFilters() && ' com os filtros aplicados'}
-                        </h2>
-                    </div>
-
                     <div className="casas-list">
                         {casas.map((casa) => (
-                            <div key={casa.id} className="casa-card" onClick={() => navigate(`/casaExpandida/${casa.id}`)}
-                                 style={{ cursor: 'pointer' }}>
+                            <div key={casa.id} className="casa-card" onClick={() => navigate(`/casaExpandida/${casa.id}`)} style={{ cursor: "pointer" }}>
                                 <img src={casa.imagem} alt={casa.nome} className="casa-image" />
                                 <div className="casa-info">
                                     <h3 className="casa-title">{casa.nome}</h3>
-                                    <div className="casa-price">R${casa.precoPorNoite} por noite</div>
+                                    <p className="casa-price">R$ {casa.precoPorNoite} / noite</p>
                                     <div className="casa-details">
-                                        <div className="casa-rating">
-                                            <img
-                                                src="/icons8-star-50 1.png"
-                                                alt="estrela"
-                                                className="star-icon"
-                                            />
-                                            <span className="rating-value">{casa.avaliacao}</span>
-                                        </div>
-                                        <div className="separator-dot"></div>
-                                        <div className="casa-location">
-                                            <span>{casa.localizacao}</span>
-                                        </div>
+                                        <span>{casa.localizacao}</span>
+                                        <span className="separator-dot"></span>
+                                        <div className="casa-rating">⭐ <span className="rating-value">{casa.avaliacao.toFixed(1)}</span></div>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
+                    {casas.length === 0 && !loading && <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '1.2rem' }}>Nenhum imóvel encontrado.</p>}
                 </div>
             </section>
 
-            <FiltrosModal
-                isOpen={isFiltersOpen}
-                onClose={handleCloseFilters}
-                onApplyFilters={handleApplyFilters}
-                filtrosIniciais={filtrosAtivos}
-            />
+            {isFiltersOpen && (
+                <FiltrosModal isOpen={isFiltersOpen} onClose={handleCloseFilters} onApplyFilters={handleApplyFilters} filtrosIniciais={filtrosAtivos} />
+            )}
         </div>
     );
 };

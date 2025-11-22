@@ -1,14 +1,21 @@
 package com.Zenvy.controllers;
 
+import com.Zenvy.dto.MensagemDTO;
 import com.Zenvy.models.Mensagem;
+import com.Zenvy.models.Usuario;
+import com.Zenvy.repositories.UsuarioRepository;
 import com.Zenvy.services.MensagemService;
+import com.Zenvy.services.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mensagens")
@@ -16,12 +23,35 @@ import java.util.List;
 public class MensagemController {
 
     private final MensagemService mensagemService;
+    private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
 
-    @PostMapping("/enviar")
-    public ResponseEntity<Mensagem> enviarMensagem(@RequestBody @Valid Mensagem mensagem) {
-        var novaMensagem = mensagemService.enviarMensagem(mensagem);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaMensagem);
+    @PostMapping("/enviar/{reservaId}")
+    public ResponseEntity<MensagemDTO> enviarMensagem(
+            @PathVariable Long reservaId,
+            @RequestBody Map<String, String> body,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+
+        String conteudo = body.get("conteudo");
+        Mensagem nova = mensagemService.enviarMensagem(reservaId, conteudo, email);
+
+
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Long idUsuarioLogado = usuario.getId();
+
+
+        MensagemDTO dto = new MensagemDTO(nova, idUsuarioLogado);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
+
+
+
+
+
 
     @GetMapping("/recebidas/{destinatarioId}")
     public ResponseEntity<List<Mensagem>> listarMensagensRecebidas(
@@ -46,4 +76,32 @@ public class MensagemController {
         mensagemService.deletarMensagem(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/reserva/{reservaId}")
+    public ResponseEntity<List<MensagemDTO>> listarPorReserva(
+            @PathVariable Long reservaId,
+            Authentication authentication) {
+
+
+        String emailUsuarioLogado = authentication.getName();
+
+
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Long idUsuarioLogado = usuario.getId();
+
+
+        List<Mensagem> mensagens = mensagemService.listarPorReserva(reservaId);
+
+
+        List<MensagemDTO> dtos = mensagens.stream()
+                .map(msg -> new MensagemDTO(msg, idUsuarioLogado))
+                .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+
+
 }

@@ -15,7 +15,7 @@ const LandingPage = () => {
         carregarGaleria();
     }, []);
 
-    // Carrega dados do usuário
+
     const carregarUsuario = () => {
         const token = localStorage.getItem('accessToken');
         if (!token) return;
@@ -58,13 +58,14 @@ const LandingPage = () => {
         navigate('/');
     };
 
-    const nextImage = () => {
+    const landingNextImage = () => {
         setCurrentImageIndex(prev => (prev === galleryImages.length - 1 ? 0 : prev + 1));
     };
 
-    const prevImage = () => {
+    const landingPrevImage = () => {
         setCurrentImageIndex(prev => (prev === 0 ? galleryImages.length - 1 : prev - 1));
     };
+
 
     const toggleFaq = (index) => {
         setActiveFaq(activeFaq === index ? null : index);
@@ -114,7 +115,6 @@ const LandingPage = () => {
 
     return (
         <div className="landing-page">
-            {/* ✅ Navbar separada */}
             <NavBar user={user} handleLogout={handleLogout} />
 
             {/* Hero */}
@@ -128,12 +128,15 @@ const LandingPage = () => {
                             das nossas<br />
                             Residências
                         </h1>
-                        <button className="btn-reserva">Reserve já</button>
+                        <button className="btn-reserva" onClick={() => navigate('/casas')}>
+                            Reserve já
+                        </button>
+
                     </div>
                 </div>
             </section>
 
-            {/* About */}
+            {/* Sobre */}
             <section className="about" id="sobre">
                 <h2 className="section-title">
                     <span className="title-text">Sobre</span>
@@ -152,7 +155,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Features */}
+            {/* Por que escolher? */}
             <section className="features" id="porque-escolher">
                 <h2 className="section-title">
                     <span className="title-text">Por que me </span>
@@ -175,29 +178,30 @@ const LandingPage = () => {
                 {galleryImages.length === 0 ? (
                     <p>Nenhuma imagem na galeria.</p>
                 ) : (
-                    <div className="carousel-container">
-                        <div className="carousel">
-                            <button className="carousel-btn carousel-btn-prev" onClick={prevImage}>‹</button>
-                            <div className="carousel-image-container">
+                    <div className="landing-carousel-container">
+                        <div className="landing-carousel">
+                            <button className="landing-carousel-btn landing-carousel-btn-prev" onClick={landingPrevImage}>‹</button>
+                            <div className="landing-carousel-image-container">
                                 <img
                                     src={galleryImages[currentImageIndex]}
                                     alt={`Espaço ${currentImageIndex + 1}`}
-                                    className="carousel-image"
+                                    className="landing-carousel-image"
                                 />
                             </div>
-                            <button className="carousel-btn carousel-btn-next" onClick={nextImage}>›</button>
+                            <button className="landing-carousel-btn landing-carousel-btn-next" onClick={landingNextImage}>›</button>
                         </div>
-                        <div className="carousel-indicators">
+                        <div className="landing-carousel-indicators">
                             {galleryImages.map((_, index) => (
                                 <button
                                     key={index}
-                                    className={`carousel-indicator ${index === currentImageIndex ? 'active' : ''}`}
+                                    className={`landing-carousel-indicator ${index === currentImageIndex ? 'active' : ''}`}
                                     onClick={() => setCurrentImageIndex(index)}
                                 />
                             ))}
                         </div>
                     </div>
                 )}
+
             </section>
 
             {/* FAQ */}
@@ -222,7 +226,7 @@ const LandingPage = () => {
                     <div className="footer-section">
                         <h3>Contato</h3>
                         <div className="contact-info">
-                            <div className="contact-item"><span className="contact-icon">📧</span><span>camila.silva@email.com</span></div>
+                            <div className="contact-item"><span className="contact-icon">📧</span><span>camila.silva@gmail.com</span></div>
                             <div className="contact-item"><span className="contact-icon">📱</span><span>(11) 98765-4321</span></div>
                             <div className="contact-item"><span className="contact-icon">📞</span><span>(11) 3234-5678</span></div>
                         </div>

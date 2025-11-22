@@ -1,8 +1,4 @@
-/* AdicionarImovel.css */
 
-/* ⚠️ Certifique-se de importar as fontes no seu projeto: 
-   'Kdam Thmor' (para títulos/labels) e 'League Spartan' (para botões).
-*/
 
 :root {
     --primary-blue: #00AAFF;
@@ -27,18 +23,18 @@
 
 .grid-layout {
     display: flex;
-    justify-content: flex-start; /* Alinha tudo à esquerda */
+    justify-content: flex-start;
     gap: 80px;
     margin-bottom: 60px;
 }
 
-/* --- COLUNA ESQUERDA (IMAGENS & COMODIDADES) --- */
+
 .coluna-esquerda {
     flex-shrink: 0;
     width: 533px;
 }
 
-/* Box ajustada para múltiplas imagens */
+
 .upload-box {
     width: 533px;
     height: auto;
@@ -54,7 +50,7 @@
     overflow: hidden;
     position: relative;
     margin-bottom: 40px;
-    padding: 20px; /* Adiciona padding interno */
+    padding: 20px;
     box-sizing: border-box;
 }
 
@@ -90,7 +86,7 @@
     margin-top: 20px;
 }
 
-/* Estilos de preview de múltiplas imagens */
+
 .preview-container {
     width: 100%;
     display: flex;
@@ -135,7 +131,7 @@
     align-items: center;
 }
 
-/* Botão grande de Comodidades (Figma) */
+
 .btn-comodidades-large {
     width: 279px;
     height: 84px;
@@ -150,7 +146,6 @@
     transition: background-color 0.2s;
     margin-top: 100px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    /* Alinhamento ao centro da coluna esquerda */
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -160,7 +155,7 @@
     background-color: #0088cc;
 }
 
-/* --- COLUNA DIREITA (INPUTS) --- */
+
 .coluna-direita {
     flex-grow: 1;
     max-width: 700px;
@@ -205,14 +200,14 @@
     width: 596px;
 }
 
-/* ⭐️ CORREÇÃO DE ALINHAMENTO AQUI ⭐️ */
+
 .row-fields {
     display: flex;
     gap: 40px;
     width: auto;
     margin-bottom: 30px;
 
-    /* 🔑 NOVIDADE: Alinha o conteúdo dos grupos pela parte de baixo */
+
     align-items: flex-end;
 }
 
@@ -222,14 +217,14 @@
 }
 
 .half-width {
-    width: 248px; /* Largura dos campos menores */
+    width: 248px;
 }
 
 .large-width {
-    width: 389px; /* Largura do campo Localização */
+    width: 389px;
 }
 
-/* --- DESCRIÇÃO --- */
+
 .descricao-section {
     margin-top: 100px;
     padding: 0 50px;
@@ -265,7 +260,7 @@
 }
 
 
-/* --- BOTÃO FINAL DE CRIAÇÃO --- */
+
 .btn-criar-imovel {
     width: 442px;
     height: 126px;
@@ -292,7 +287,7 @@
     cursor: not-allowed;
 }
 
-/* --- MENSAGENS DE FEEDBACK --- */
+
 .feedback-message {
     text-align: center;
     font-size: 18px;

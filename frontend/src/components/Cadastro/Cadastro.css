@@ -130,9 +130,9 @@
     color: rgba(0, 0, 0, 0.6);
 }
 
-/* LINHA MAIS PARA A ESQUERDA — OPÇÃO 2 */
+
 .input-line {
-    width: 100% !important;   /* ajuste aqui */
+    width: 100% !important;
     height: 1px !important;
     background: black !important;
 }

@@ -15,7 +15,7 @@ const NavBar = ({ user, handleLogout }) => {
                 <div className="nav-links">
                     <Link to="/" className="nav-link">Home</Link>
                     <Link to="/casas" className="nav-link">Casas</Link>
-                    <Link to="/contato" className="nav-link">Contato</Link>
+                    <a href="mailto:camila.silva@gmail.com" className="nav-link">Contato</a>
                 </div>
 
                 <div className="nav-buttons">

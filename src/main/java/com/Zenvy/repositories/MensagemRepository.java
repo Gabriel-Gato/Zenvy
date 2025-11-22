@@ -9,4 +9,10 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
     List<Mensagem> findByIdRemetenteOrderByDataEnvioDesc(Long idRemetente);
 
     List<Mensagem> findByIdDestinatarioOrderByDataEnvioDesc(Long idDestinatario);
+
+    boolean existsByReservaId(Long reservaId);
+
+    List<Mensagem> findByReservaIdOrderByDataEnvioAsc(Long reservaId);
+
+
 }

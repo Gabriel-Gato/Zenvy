@@ -1,0 +1,20 @@
+.chat-button {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(90deg,#1e3a8a,#2563eb);
+    color: white;
+    box-shadow: 0 6px 18px rgba(37,99,235,0.18);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.chat-button svg { color: white; opacity: 0.95; }
+
+.chat-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(37,99,235,0.22);
+}

@@ -74,7 +74,7 @@ const Cadastro = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Checa se tem erro antes de enviar
+
         for (let key in errors) {
             if (errors[key]) {
                 alert('Corrija os erros antes de continuar.');
@@ -129,7 +129,7 @@ const Cadastro = () => {
                     <form className="cadastro-form" onSubmit={handleSubmit}>
                         <div className="form-row">
 
-                            {/* COLUNA ESQUERDA ------------------ */}
+
                             <div className="form-column">
 
                                 {/* Email */}
@@ -195,7 +195,7 @@ const Cadastro = () => {
 
                             </div>
 
-                            {/* COLUNA DIREITA ------------------ */}
+
                             <div className="form-column">
 
                                 {/* Nome */}

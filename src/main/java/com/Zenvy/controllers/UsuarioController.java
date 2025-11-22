@@ -1,5 +1,6 @@
 package com.Zenvy.controllers;
 
+import com.Zenvy.dto.AlterarSenhaRequest;
 import com.Zenvy.dto.AuthResponse;
 import com.Zenvy.dto.LoginRequest;
 import com.Zenvy.dto.UsuarioDTO;
@@ -57,7 +58,7 @@ public class UsuarioController {
         return ResponseEntity.ok(atualizado);
     }
 
-    @PostMapping("/me/foto")
+    @PutMapping("/me/foto")
     public ResponseEntity<Usuario> uploadFotoMe(Authentication authentication,
                                                 @RequestParam("file") MultipartFile file) throws IOException {
         Usuario usuario = (Usuario) authentication.getPrincipal();
@@ -75,4 +76,13 @@ public class UsuarioController {
         usuarioService.deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/me/senha")
+    public ResponseEntity<Void> alterarSenha(Authentication authentication,
+                                             @RequestBody AlterarSenhaRequest request) {
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        usuarioService.alterarSenha(usuario.getId(), request.currentPassword(), request.newPassword());
+        return ResponseEntity.ok().build();
+    }
+
 }

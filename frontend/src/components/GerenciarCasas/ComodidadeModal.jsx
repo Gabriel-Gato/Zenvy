@@ -1,10 +1,9 @@
-// ComodidadeModal.js
+
 
 import React, { useState, useEffect } from 'react';
 import './ComodidadeModal.css';
 
-// Mapeamento do Enum Comodidade de Java para JavaScript
-// Usaremos apenas o nome, a lógica de ícone pode ser adicionada depois
+
 const COMODIDADES_OPCOES = [
     { value: "WIFI", nome: "Wi-Fi" },
     { value: "AR_CONDICIONADO", nome: "Ar-condicionado" },
@@ -34,11 +33,11 @@ const COMODIDADES_OPCOES = [
 ];
 
 const ComodidadeModal = ({ isOpen, onClose, onSave, selectedComodidades }) => {
-    // Estado temporário para as comodidades dentro do modal
+
     const [tempSelected, setTempSelected] = useState(new Set(selectedComodidades));
 
     useEffect(() => {
-        // Atualiza o estado temporário ao abrir o modal
+
         setTempSelected(new Set(selectedComodidades));
     }, [selectedComodidades]);
 
@@ -61,7 +60,7 @@ const ComodidadeModal = ({ isOpen, onClose, onSave, selectedComodidades }) => {
         onClose();
     };
 
-    // Função para agrupar em colunas (melhora a visualização)
+
     const renderComodidades = () => {
         const numColumns = 3;
         const columns = Array.from({ length: numColumns }, () => []);

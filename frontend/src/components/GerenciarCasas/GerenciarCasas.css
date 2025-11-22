@@ -1,11 +1,4 @@
-/* GerenciarCasas.css */
 
-/* 1. Configuração de Fontes */
-/* ⚠️ Importe estas fontes no seu arquivo principal (index.css ou App.css) */
-/* @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700&family=Sofia+Sans+Extra+Condensed&family=Kdam+Thmor&family=Spartan:wght@700&display=swap');
-*/
-
-/* 2. Estilos Gerais da Página */
 .GerenciarCasasPage {
     width: 100%;
     min-height: 100vh;
@@ -53,9 +46,7 @@
     padding-top: 20px;
 }
 
-/* -------------------------------------------------- */
-/* 4. Estilos do Card de Adicionar Nova Casa (Aprimorado) */
-/* -------------------------------------------------- */
+
 .AddCasaCard {
     width: 290px;
     height: 290px;
@@ -103,7 +94,7 @@
     margin-top: 10px;
 }
 
-/* 5. Estilos do Card de Casa (CasaCardContainer) */
+/*  Estilos do Card de Casa */
 .CasaCardContainer {
     width: 291px;
     height: 450px;

@@ -55,11 +55,12 @@ public class SecurityConfig {
                                 "/imoveis/atualizar/**"
                         ).hasAuthority("ROLE_ANFITRIAO")
 
-                        // Endpoints que precisam de autenticação (hospede ou admin)
+                        // Endpoints que precisam de autenticação (hospede ou anfitrião)
                         .requestMatchers(
                                 "/usuarios/me",
                                 "/reservas/**",
-                                "/avaliacao/**"
+                                "/avaliacao/**",
+                                "/mensagens/**"
                         ).authenticated()
 
                         // Qualquer outro

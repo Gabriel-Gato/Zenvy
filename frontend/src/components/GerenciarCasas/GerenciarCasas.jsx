@@ -2,14 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GerenciarCasas.css';
 
-// -----------------------------------------------------------
-// ⚠️ Endpoints Baseados no seu ImovelController
-// -----------------------------------------------------------
+
 const API_BASE_URL = 'http://localhost:8080/imoveis';
 
-// -----------------------------------------------------------
-// Componente Reutilizável para o Card da Casa
-// -----------------------------------------------------------
+
 const CasaCard = ({ casa, onEdit, onDelete }) => {
     return (
         <div className="CasaCardContainer">
@@ -47,16 +43,14 @@ const CasaCard = ({ casa, onEdit, onDelete }) => {
 };
 
 
-// -----------------------------------------------------------
-// Componente Principal: GerenciarCasas
-// -----------------------------------------------------------
+
 const GerenciarCasas = () => {
     const navigate = useNavigate();
     const [imoveis, setImoveis] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Função para buscar a lista de imóveis da API
+
     const fetchImoveis = useCallback(async () => {
         setIsLoading(true);
         setError(null);
@@ -139,7 +133,7 @@ const GerenciarCasas = () => {
         }
     };
 
-    // --- Renderização ---
+
     if (isLoading) {
         return (
             <div className="GerenciarCasasPage loading-state">
@@ -165,8 +159,8 @@ const GerenciarCasas = () => {
                     className="Logo"
                     src="icons8-chalé-100 1.png"
                     alt="Zenvy Logo"
-                    style={{ cursor: 'pointer' }} // opcional: deixa o cursor tipo link
-                    onClick={() => navigate('/adminPanel')} // <-- aqui
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => navigate('/adminPanel')}
                 />
                 <h2>Gerenciar Seus Imóveis</h2>
             </div>
@@ -176,13 +170,13 @@ const GerenciarCasas = () => {
 
             <div className="CasasGrid">
 
-                {/* Card para Adicionar Novo Imóvel (Com SVG elegante) */}
+                {/* Card para Adicionar Novo Imóvel*/}
                 <div
                     onClick={handleAdicionarImovel}
                     className="AddCasaCard"
                     title="Clique para cadastrar um novo imóvel"
                 >
-                    {/* Ícone SVG Elegante de Adição */}
+                    {/* Ícone de Adição */}
                     <svg
                         className="AddCasaIconSvg"
                         viewBox="0 0 24 24"
@@ -192,7 +186,7 @@ const GerenciarCasas = () => {
                         <path
                             d="M12 4V20M4 12H20"
                             stroke="currentColor"
-                            strokeWidth="2.5" /* Ajustado para ser levemente mais grosso */
+                            strokeWidth="2.5"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                         />
@@ -203,7 +197,7 @@ const GerenciarCasas = () => {
                     </div>
                 </div>
 
-                {/* Listagem dos Imóveis Existentes */}
+                {/* Listagem dos Imóveis */}
                 {imoveis.length > 0 ? (
                     imoveis.map(imovel => (
                         <CasaCard

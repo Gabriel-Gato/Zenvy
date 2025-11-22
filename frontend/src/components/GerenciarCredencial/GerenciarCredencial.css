@@ -1,240 +1,337 @@
-.gerenciar-credencial {
-  width: 1440px;
-  height: 1024px;
-  position: relative;
-  background: white;
-  overflow: hidden;
-  margin: 0 auto;
-  font-family: 'Libre Caslon Display', serif;
+/* Container principal */
+.gcredencial-container {
+    width: 1440px;
+    height: 1024px;
+    position: relative;
+    background: white;
+    overflow: hidden;
+    margin: 0 auto;
+    font-family: 'Libre Caslon Display', serif;
 }
 
 /* Foto de Perfil */
-.profile-picture-label {
-  width: 400px;
-  height: 400px;
-  left: 84px;
-  top: 80px;
-  position: absolute;
-  cursor: pointer;
-  display: block;
-}
-
-.profile-picture {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid #00AAFF;
-  transition: transform 0.2s ease;
-}
-
-.profile-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  display: block;
-}
-
-.ellipse-background {
-  width: 100%;
-  height: 100%;
-  background: #D9D9D9;
-  border-radius: 50%;
-  position: absolute;
-  border: 3px solid #00AAFF;
-}
-
-/* Botão Alterar Senha */
-.change-password-btn {
-  width: 302px;
-  height: 96px;
-  left: 1016px;
-  top: 56px;
-  position: absolute;
-  border-radius: 50px;
-  border: 1px solid #EE7300;
-  background: transparent;
-  color: #EE7300;
-  font-size: 32px;
-  font-family: 'Libre Caslon Display', serif;
-  font-weight: 400;
-  line-height: 40px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.change-password-btn:hover {
-  background: #EE7300;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Seção de Informações do Usuário */
-.user-info-section {
-  position: absolute;
-  left: 551px;
-  top: 233px;
-  display: flex;
-  flex-direction: column;
-  gap: 60px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  position: relative;
-}
-
-.input-label {
-  color: black;
-  font-size: 32px;
-  font-family: 'Libre Caslon Display', serif;
-  font-weight: 400;
-  line-height: 40px;
-  text-align: center;
-}
-
-.user-input {
-  background: transparent;
-  border: none;
-  color: black;
-  font-size: 28px;
-  font-family: 'Libre Caslon Display', serif;
-  font-weight: 400;
-  padding: 10px 0;
-  width: 603px;
-  outline: none;
-}
-
-.user-input::placeholder {
-  color: #999;
-  font-style: italic;
-}
-
-.input-line {
-  width: 603px;
-  height: 1px;
-  background: black;
-  transition: all 0.3s ease;
-}
-
-.user-input:focus + .input-line {
-  height: 2px;
-  background: #EE7300;
-}
-
-/* Botão Salvar Alterações */
-.action-buttons-container {
-  position: absolute;
-  top: 827px;
-  left: 551px; /* alinha com a seção de informações */
-  display: flex;
-  width: 603px; /* largura igual aos inputs */
-}
-
-.save-changes-btn {
-  margin-left: auto; /* empurra somente este botão para a direita */
-  width: 359px;
-  height: 96px;
-  border-radius: 50px;
-  border: 1px solid #65DB21;
-  background: transparent;
-  color: #65DB21;
-  font-size: 32px;
-  font-family: 'Libre Caslon Display', serif;
-  font-weight: 400;
-  line-height: 40px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.save-changes-btn:hover {
-  background: #65DB21;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .gerenciar-credencial {
-    width: 100%;
-    height: auto;
-    padding: 20px;
-  }
-
-  .profile-picture-label {
-    position: relative;
-    left: auto;
-    top: auto;
-    margin: 0 auto 40px;
-    width: 300px;
-    height: 300px;
-  }
-
-  .change-password-btn {
-    position: relative;
-    left: auto;
-    top: auto;
-    margin: 0 auto 40px;
+.gcredencial-avatar-label {
+    width: 400px;
+    height: 400px;
+    left: 84px;
+    top: 200px;
+    position: absolute;
+    cursor: pointer;
     display: block;
-  }
+}
 
-  .user-info-section {
+.gcredencial-avatar {
+    width: 100%;
+    height: 100%;
     position: relative;
-    left: auto;
-    top: auto;
-    width: 100%;
-  }
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #00AAFF;
+    transition: transform 0.2s ease;
+}
 
-  .user-input {
+.gcredencial-avatar img {
     width: 100%;
-  }
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
 
-  .input-line {
+.gcredencial-avatar-placeholder {
     width: 100%;
-  }
+    height: 100%;
+    background: #D9D9D9;
+    border-radius: 50%;
+    position: absolute;
+    border: 3px solid #00AAFF;
+}
 
-  .action-buttons-container {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: 100%;
+/* Seção de Informações */
+.gcredencial-info-section {
+    position: absolute;
+    left: 551px;
+    top: 233px;
     display: flex;
-  }
-
-  .save-changes-btn {
-    margin-left: auto;
-    width: 300px;
-  }
+    flex-direction: column;
+    gap: 60px;
 }
 
-.back-button-container {
-  position: absolute;
-  top: 40px;
-  left: 40px;
+.gcredencial-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
 }
 
-.back-btn {
-  width: 180px;
-  height: 60px;
-  border-radius: 50px;
-  border: 1px solid #00AAFF;
-  background: transparent;
-  color: #00AAFF;
-  font-size: 24px;
-  font-family: 'Libre Caslon Display', serif;
-  font-weight: 400;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.gcredencial-input-label {
+    color: black;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 40px;
+    text-align: center;
 }
 
-.back-btn:hover {
-  background: #00AAFF;
-  color: white;
-  transform: translateY(-2px);
+.gcredencial-input {
+    background: transparent;
+    border: none;
+    color: black;
+    font-size: 28px;
+    font-weight: 400;
+    padding: 10px 0;
+    width: 603px;
+    outline: none;
 }
 
+.gcredencial-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.gcredencial-input-line {
+    width: 603px;
+    height: 1px;
+    background: black;
+    transition: all 0.3s ease;
+}
+
+.gcredencial-input:focus + .gcredencial-input-line {
+    height: 2px;
+    background: #EE7300;
+}
+
+/* Botões */
+.gcredencial-buttons {
+    position: absolute;
+    top: 827px;
+    left: 551px;
+    display: flex;
+    gap: 20px;
+    width: 700px;
+}
+
+.gcredencial-save-btn,
+.gcredencial-change-pass-btn {
+    flex: 1;
+    height: 96px;
+    border-radius: 50px;
+    font-size: 32px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Libre Caslon Display', serif;
+    background: transparent;
+}
+
+.gcredencial-save-btn {
+    border: 1px solid #65DB21;
+    color: #65DB21;
+}
+
+.gcredencial-save-btn:hover {
+    background: #65DB21;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.gcredencial-change-pass-btn {
+    border: 1px solid #EE7300;
+    color: #EE7300;
+}
+
+.gcredencial-change-pass-btn:hover {
+    background: #EE7300;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Botão Voltar */
+.gcredencial-back-btn-container {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+}
+
+.gcredencial-back-btn {
+    width: 180px;
+    height: 60px;
+    border-radius: 50px;
+    border: 1px solid #00AAFF;
+    background: transparent;
+    color: #00AAFF;
+    font-size: 24px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gcredencial-back-btn:hover {
+    background: #00AAFF;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Modal Alterar Senha */
+.gcredencial-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.gcredencial-modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.gcredencial-modal-content h2 {
+    text-align: center;
+}
+
+.gcredencial-modal-input {
+    padding: 10px;
+    font-size: 18px;
+    width: 100%;
+}
+
+.gcredencial-modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Modal Overlay */
+.gcredencial-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 1rem;
+    animation: gcredencial-overlayFadeIn 0.3s ease-out;
+}
+
+@keyframes gcredencial-overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Modal Content */
+.gcredencial-modal-content {
+    background: #ffffff;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    padding: 40px 30px;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    animation: gcredencial-modalFadeIn 0.3s ease-out;
+}
+
+@keyframes gcredencial-modalFadeIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.gcredencial-modal-content h2 {
+    font-family: 'Libre Caslon Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Inputs do Modal */
+.gcredencial-modal-input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 18px;
+    font-family: 'Libre Caslon Display', serif;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.gcredencial-modal-input:focus {
+    border-color: #EE7300;
+}
+
+/* Botões do Modal */
+.gcredencial-modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.gcredencial-modal-buttons button {
+    flex: 1;
+    padding: 12px 0;
+    font-size: 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Libre Caslon Display', serif;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.gcredencial-modal-buttons button:first-child {
+    background: #ccc;
+    color: #333;
+}
+
+.gcredencial-modal-buttons button:first-child:hover {
+    background: #b3b3b3;
+}
+
+.gcredencial-modal-buttons button:last-child {
+    background: #EE7300;
+    color: white;
+}
+
+.gcredencial-modal-buttons button:last-child:hover {
+    background: #cc5c00;
+}
+
+/* Responsividade do Modal */
+@media (max-width: 480px) {
+    .gcredencial-modal-content {
+        padding: 30px 20px;
+    }
+
+    .gcredencial-modal-buttons {
+        flex-direction: column;
+    }
+
+    .gcredencial-modal-buttons button {
+        width: 100%;
+    }
+
+    .gcredencial-modal-buttons button + button {
+        margin-top: 10px;
+    }
+}

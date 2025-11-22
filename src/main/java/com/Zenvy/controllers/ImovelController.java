@@ -39,13 +39,13 @@ public class ImovelController {
     @GetMapping("/filtro")
     public ResponseEntity<List<ImovelSimplesDTO>> filtrar(@Valid FiltroImovelRequest filtro) {
 
-        // Busca os imóveis filtrados
+
         List<Imovel> resultados = imovelService.filtrarImoveis(filtro);
 
-        // Converte cada Imovel em ImovelSimplesDTO
+
         List<ImovelSimplesDTO> dtoResultados = resultados.stream()
-                .map(imovel -> new ImovelSimplesDTO(imovel)) // usa o construtor do DTO
-                .collect(Collectors.toList()); // compatível com Java 8
+                .map(imovel -> new ImovelSimplesDTO(imovel))
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtoResultados);
     }
@@ -81,9 +81,7 @@ public class ImovelController {
     }
 
 
-    // ---------------------------------------------------
-    // Listar todos os imóveis (com DTOs)
-    // ---------------------------------------------------
+
     @GetMapping("/listar")
     public ResponseEntity<List<ImovelResponseDTO>> listarTodos() {
         return ResponseEntity.ok(imovelService.listarTodos());
@@ -95,9 +93,7 @@ public class ImovelController {
     }
 
 
-    // ---------------------------------------------------
-    // Atualizar imóvel
-    // ---------------------------------------------------
+
     @PutMapping("/atualizar/{id}")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Imovel> atualizar(
@@ -108,9 +104,7 @@ public class ImovelController {
         return ResponseEntity.ok(imovel);
     }
 
-    // ---------------------------------------------------
-    // Deletar imóvel
-    // ---------------------------------------------------
+
     @DeleteMapping("/deletar/{id}")
     @PreAuthorize("hasAuthority('ROLE_ANFITRIAO')")
     public ResponseEntity<Void> deletarPorId(@PathVariable Long id) {

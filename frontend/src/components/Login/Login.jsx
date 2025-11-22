@@ -6,7 +6,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
-    password: '' // Note que o input usa 'password', mas no body usamos 'senha'
+    password: ''
   });
   const [loading, setLoading] = useState(false);
 
@@ -24,32 +24,32 @@ const Login = () => {
     try {
       const response = await fetch('http://localhost:8080/usuarios/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // ⭐️ CORRIGIDO: Agora envia JSON
-        body: JSON.stringify({ // ⭐️ CORRIGIDO: Converte o objeto para string JSON
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           email: formData.email,
-          senha: formData.password // O backend Spring espera a chave 'senha'
+          senha: formData.password
         })
       });
 
       if (!response.ok) {
-          // Lança o erro para ser pego no catch
+
           throw new Error('Email ou senha incorretos. Verifique suas credenciais.');
       }
 
       const data = await response.json();
 
-      // Salva token e usuário no localStorage
+
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
       alert('Login realizado com sucesso!');
 
-      // Redireciona baseado na role
+
       if (data.usuario.role === 'ROLE_HOSPEDE') {
         navigate('/userProfile');
       } else if (data.usuario.role === 'ANFITRIAO') {
-        // Redireciona para a página de gerenciamento do Anfitrião
+
         navigate('/anfitriao/gerenciar-casas');
       } else {
         navigate('/');
@@ -63,9 +63,7 @@ const Login = () => {
     }
   };
 
-  // -----------------------------------------------------------
-  // JSX (Renderização do Formulário)
-  // -----------------------------------------------------------
+
   return (
     <div className="login-page">
       <div className="login-background">

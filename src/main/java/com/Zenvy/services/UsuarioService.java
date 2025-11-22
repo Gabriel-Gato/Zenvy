@@ -123,4 +123,19 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado"));
         return passwordEncoder.matches(senha, usuario.getSenha());
     }
+
+    public void alterarSenha(Long usuarioId, String senhaAtual, String novaSenha) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
+            throw new BusinessException("Senha atual incorreta");
+        }
+
+
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuarioRepository.save(usuario);
+    }
+
 }

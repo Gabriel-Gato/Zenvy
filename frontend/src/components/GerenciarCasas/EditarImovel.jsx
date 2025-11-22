@@ -29,7 +29,7 @@ const EditarImovel = () => {
     const [message, setMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Carregar dados do imóvel
+
     useEffect(() => {
         const fetchImovel = async () => {
             const token = getAccessToken();

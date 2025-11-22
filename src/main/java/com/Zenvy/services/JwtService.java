@@ -28,15 +28,15 @@ public class JwtService {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    // ----------------------- KEY -----------------------
+
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // ----------------------- CREATE CLAIMS -----------------------
+
     private Map<String, Object> createClaims(UserDetails userDetails) {
 
-        // Aqui vira uma lista de Strings, ex: ["ROLE_USER"]
+
         List<String> authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
@@ -44,7 +44,7 @@ public class JwtService {
         return Map.of("authorities", authorities);
     }
 
-    // ----------------------- TOKEN GENERATOR -----------------------
+
     private String generateToken(Map<String, Object> extraClaims, String subject, boolean isRefreshToken) {
         long expiration = isRefreshToken ? refreshTokenExpiration : accessTokenExpiration;
 
@@ -65,7 +65,7 @@ public class JwtService {
         return generateToken(createClaims(userDetails), userDetails.getUsername(), true);
     }
 
-    // ----------------------- VALIDATION -----------------------
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
         return extractUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
@@ -74,7 +74,7 @@ public class JwtService {
         return extractUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
-    // ----------------------- EXTRACT CLAIMS -----------------------
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -99,7 +99,7 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    // ----------------------- REFRESH ACCESS TOKEN -----------------------
+    //REFRESH ACCESS TOKEN
     public String refreshAccessToken(String refreshToken, UserDetails userDetails) {
         if (isRefreshTokenValid(refreshToken, userDetails)) {
             return generateAccessToken(userDetails);

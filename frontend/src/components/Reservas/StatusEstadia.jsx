@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAccessToken, logout } from '../../services/AuthService/AuthService';
+import ChatButton from '../../components/ChatButton/ChatButton';
 import './StatusEstadia.css';
 
 const API_BASE_URL = 'http://localhost:8080/reservas';
@@ -78,7 +79,7 @@ const StatusEstadia = () => {
             if (!res.ok) throw new Error(`Erro ao concluir reserva: ${res.status}`);
             alert('Estadia concluída!');
 
-            // ⭐ AGORA PASSA O ID DO IMÓVEL (CORRETO)
+
             navigate(`/avaliacao/${reserva.imovel.id}`);
 
         } catch (err) {
@@ -87,14 +88,21 @@ const StatusEstadia = () => {
         }
     };
 
-    const handleChat = (imovelId) => {
-        navigate(`/chat/${imovelId}`);
+    const handleChat = (reservaId) => {
+        navigate(`/mensagens/${reservaId}`);
     };
+
 
     if (loading) return <div className="status-estadia-container">Carregando...</div>;
 
     return (
         <div className="status-estadia-container">
+            <button
+                className="btn-voltar"
+                onClick={() => navigate('/userProfile')}
+            >
+                ← Voltar
+            </button>
             <h1>Minhas Estadias</h1>
 
             {reservas.length === 0 && <p>Nenhuma estadia encontrada.</p>}
@@ -123,7 +131,7 @@ const StatusEstadia = () => {
                     </div>
 
                     <div className="reserva-actions">
-                        <button onClick={() => handleChat(reserva.imovel.id)}>Chat</button>
+                        <ChatButton reservaId={reserva.id} />
 
                         {(reserva.status === 'SOLICITADA' || reserva.status === 'CONFIRMADA') && (
                             <>

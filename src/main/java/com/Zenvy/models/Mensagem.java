@@ -41,4 +41,8 @@ public class Mensagem {
 
     @Column(name = "lida", nullable = false)
     private boolean lida = false;
+
+    @ManyToOne
+    @JoinColumn(name = "reserva_id", nullable = false)
+    private Reserva reserva;
 }

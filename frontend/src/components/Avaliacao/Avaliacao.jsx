@@ -7,7 +7,7 @@ const API_BASE_URL = 'http://localhost:8080/avaliacao';
 const USUARIO_ME_URL = 'http://localhost:8080/usuarios/me';
 
 const Avaliacao = () => {
-    const { id: reservaId } = useParams(); // pega o id da reserva
+    const { id: reservaId } = useParams();
     const navigate = useNavigate();
     const token = getAccessToken();
     const [nota, setNota] = useState(0);
@@ -15,7 +15,7 @@ const Avaliacao = () => {
     const [loading, setLoading] = useState(false);
     const [usuario, setUsuario] = useState(null);
 
-    // Se não tiver token, desloga
+
     useEffect(() => {
         if (!token) {
             logout();

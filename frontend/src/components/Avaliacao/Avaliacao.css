@@ -40,7 +40,7 @@
 }
 
 .estrela.ativa {
-    color: #ffb400; /* Dourado para estrelas ativas */
+    color: #ffb400;
 }
 
 .estrela:hover,
@@ -65,7 +65,7 @@
     outline: none;
 }
 
-/* Botão exclusivo para Avaliação */
+
 .avaliacao-enviar-btn {
     margin-top: 20px;
     width: 100%;

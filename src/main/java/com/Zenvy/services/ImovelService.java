@@ -112,7 +112,7 @@ public class ImovelService {
         Imovel imovel = imovelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado."));
 
-        // Garantir que a lista de imagens nunca seja nula
+
         List<String> fotos = imovel.getImagens() != null
                 ? imovel.getImagens().stream()
                 .map(img -> baseUrl + img)
