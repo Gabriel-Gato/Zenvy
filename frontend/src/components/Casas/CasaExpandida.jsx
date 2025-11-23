@@ -44,10 +44,10 @@ const CasaExpandida = () => {
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('credit');
 
-    // datas ocupadas (intervalos { checkin: Date, checkout: Date })
+
     const [datasOcupadas, setDatasOcupadas] = useState([]);
 
-    // Busca reservas do imóvel para bloquear datas
+
     const fetchDatasReservadas = async () => {
         try {
             const token = getAccessToken();
@@ -63,7 +63,7 @@ const CasaExpandida = () => {
 
             const data = await res.json();
 
-            // transforma strings do DTO em Date (zeroando horas)
+
             const intervalos = (data || []).map(r => {
                 const checkin = new Date(r.dataCheckin);
                 checkin.setHours(0,0,0,0);
@@ -78,7 +78,7 @@ const CasaExpandida = () => {
         }
     };
 
-    // Buscar dados do imóvel
+
     useEffect(() => {
         const fetchImovel = async () => {
             const token = getAccessToken();
@@ -121,7 +121,7 @@ const CasaExpandida = () => {
         fetchDatasReservadas();
     }, [id, navigate]);
 
-    // Buscar avaliações
+
     useEffect(() => {
         const fetchAvaliacoes = async () => {
             try {
@@ -152,7 +152,7 @@ const CasaExpandida = () => {
         fetchAvaliacoes();
     }, [id, navigate]);
 
-    // Atualiza preço total (garante que nights >= 1)
+
     useEffect(() => {
         if (!imovelData.precoPorNoite) {
             setTotalPrice(0);

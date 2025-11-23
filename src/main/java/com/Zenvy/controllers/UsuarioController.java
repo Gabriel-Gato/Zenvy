@@ -85,4 +85,11 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deletarMe(Authentication authentication) {
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        usuarioService.deletarPorId(usuario.getId());
+        return ResponseEntity.noContent().build();
+    }
+
 }

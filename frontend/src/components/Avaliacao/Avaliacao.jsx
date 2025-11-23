@@ -10,11 +10,12 @@ const Avaliacao = () => {
     const { id: reservaId } = useParams();
     const navigate = useNavigate();
     const token = getAccessToken();
+
     const [nota, setNota] = useState(0);
+    const [hoverNota, setHoverNota] = useState(0);
     const [comentario, setComentario] = useState('');
     const [loading, setLoading] = useState(false);
     const [usuario, setUsuario] = useState(null);
-
 
     useEffect(() => {
         if (!token) {
@@ -89,8 +90,10 @@ const Avaliacao = () => {
                     {[1, 2, 3, 4, 5].map((valor) => (
                         <span
                             key={valor}
-                            className={`estrela ${valor <= nota ? 'ativa' : ''}`}
+                            className={`estrela ${valor <= (hoverNota || nota) ? 'ativa' : ''}`}
                             onClick={() => setNota(valor)}
+                            onMouseEnter={() => setHoverNota(valor)}
+                            onMouseLeave={() => setHoverNota(0)}
                         >
                             ★
                         </span>
@@ -115,7 +118,6 @@ const Avaliacao = () => {
             >
                 {loading ? 'Enviando...' : 'Enviar Avaliação'}
             </button>
-
         </div>
     );
 };

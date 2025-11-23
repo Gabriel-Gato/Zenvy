@@ -23,7 +23,13 @@ const Cadastro = () => {
 
         switch (name) {
             case 'nome':
-                newErrors.nome = value.length < 3 ? 'O nome deve ter pelo menos 3 caracteres' : '';
+                if (value.length < 3) {
+                    newErrors.nome = 'O nome deve ter pelo menos 3 caracteres';
+                } else if (!/^[A-Za-zÀ-ú\s]+$/.test(value)) {
+                    newErrors.nome = 'O nome deve conter apenas letras';
+                } else {
+                    newErrors.nome = '';
+                }
                 break;
 
             case 'email':
