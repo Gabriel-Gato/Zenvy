@@ -514,3 +514,10 @@
     padding-top: 25px;
     border-top: 1px solid #ddd;
 }
+
+.descricao-formatada {
+    white-space: pre-line;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+

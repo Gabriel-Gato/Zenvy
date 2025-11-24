@@ -274,7 +274,7 @@ const CasaExpandida = () => {
 
                     <div className="descricao-section">
                         <h2>Descrição</h2>
-                        <p>{imovelData.descricao}</p>
+                        <p className="descricao-formatada">{imovelData.descricao}</p>
                     </div>
 
                     <hr className="section-divider" />
