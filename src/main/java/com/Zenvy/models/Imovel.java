@@ -22,6 +22,7 @@ public class Imovel {
     @Column(nullable = false)
     private String nome;
 
+    @Lob
     @Column(nullable = false)
     private String descricao;
 
